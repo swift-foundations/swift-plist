@@ -28,12 +28,21 @@
 ///
 /// ## Value Access
 ///
-/// Access values through typed properties or subscripts:
+/// Extract values via initializers:
 ///
 /// ```swift
-/// let name = plist.name.string       // Optional String
-/// let age = plist["age"].int         // Optional Int
-/// let missing = plist.missing        // Returns null plist
+/// String(plist.name)        // "John" (empty if not a string)
+/// String?(plist.name)       // Optional("John")
+/// Int(plist.age)            // Optional(30)
+/// Bool(plist.active)        // Optional(true)
+///
+/// // Navigation
+/// plist.user.name           // Plist value
+/// plist["user"]["name"]     // Same via subscript
+///
+/// // Collection access
+/// plist.array               // Optional([Plist])
+/// plist.dictionary          // Optional([(key: String, value: Plist)])
 /// ```
 @dynamicMemberLookup
 public struct Plist: Sendable, Hashable {
