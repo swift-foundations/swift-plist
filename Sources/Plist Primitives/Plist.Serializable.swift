@@ -49,7 +49,7 @@ extension String: Plist.Serializable {
 
     @inlinable
     public static func deserialize(_ plist: Plist) throws(Plist.Error) -> String {
-        guard let value = plist.string else {
+        guard case .string(let value) = plist.raw else {
             throw .typeMismatch(expected: "string", got: plist.typeName)
         }
         return value
@@ -66,10 +66,13 @@ extension Int: Plist.Serializable {
 
     @inlinable
     public static func deserialize(_ plist: Plist) throws(Plist.Error) -> Int {
-        guard let value = plist.int else {
+        guard case .integer(let value) = plist.raw else {
             throw .typeMismatch(expected: "integer", got: plist.typeName)
         }
-        return value
+        guard let result = Int(exactly: value) else {
+            throw .typeMismatch(expected: "integer (within Int range)", got: "integer (overflow)")
+        }
+        return result
     }
 }
 
@@ -81,7 +84,7 @@ extension Int64: Plist.Serializable {
 
     @inlinable
     public static func deserialize(_ plist: Plist) throws(Plist.Error) -> Int64 {
-        guard let value = plist.integer else {
+        guard case .integer(let value) = plist.raw else {
             throw .typeMismatch(expected: "integer", got: plist.typeName)
         }
         return value
@@ -98,14 +101,14 @@ extension Double: Plist.Serializable {
 
     @inlinable
     public static func deserialize(_ plist: Plist) throws(Plist.Error) -> Double {
-        if let value = plist.real {
+        switch plist.raw {
+        case .real(let value):
             return value
-        }
-        // Also accept integers as doubles
-        if let value = plist.integer {
+        case .integer(let value):
             return Double(value)
+        default:
+            throw .typeMismatch(expected: "real or integer", got: plist.typeName)
         }
-        throw .typeMismatch(expected: "real or integer", got: plist.typeName)
     }
 }
 
@@ -119,7 +122,7 @@ extension Bool: Plist.Serializable {
 
     @inlinable
     public static func deserialize(_ plist: Plist) throws(Plist.Error) -> Bool {
-        guard let value = plist.bool else {
+        guard case .bool(let value) = plist.raw else {
             throw .typeMismatch(expected: "bool", got: plist.typeName)
         }
         return value

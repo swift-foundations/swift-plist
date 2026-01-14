@@ -49,12 +49,12 @@ extension Plist.XML {
         let root = doc.root
 
         // The root element should be <plist>
-        guard root.get.name == "plist" else {
-            throw .unexpectedElement(expected: "plist", got: root.get.name)
+        guard root.element.name == "plist" else {
+            throw .unexpectedElement(expected: "plist", got: root.element.name)
         }
 
         // Get the content element (first child of plist)
-        let children = root.get.children
+        let children = root.children()
         guard let content = children.first else {
             throw .missingRequiredElement("plist content")
         }
@@ -67,23 +67,23 @@ extension Plist.XML {
 
 extension Plist.XML {
     private static func parseElement(_ element: XML) throws(Plist.Error) -> Plist {
-        let name = element.get.name
+        let name = element.element.name
 
         switch name {
         case "string":
-            return Plist(.string(element.get.text ?? ""))
+            return Plist(.string(String(element)))
 
         case "integer":
-            guard let text = element.get.text,
-                  let value = Int64(text) else {
-                throw .typeMismatch(expected: "integer", got: element.get.text ?? "empty")
+            let text = String(element)
+            guard !text.isEmpty, let value = Int64(text) else {
+                throw .typeMismatch(expected: "integer", got: text.isEmpty ? "empty" : text)
             }
             return Plist(.integer(value))
 
         case "real":
-            guard let text = element.get.text,
-                  let value = Double(text) else {
-                throw .typeMismatch(expected: "real", got: element.get.text ?? "empty")
+            let text = String(element)
+            guard !text.isEmpty, let value = Double(text) else {
+                throw .typeMismatch(expected: "real", got: text.isEmpty ? "empty" : text)
             }
             return Plist(.real(value))
 
@@ -94,7 +94,7 @@ extension Plist.XML {
             return Plist(.bool(false))
 
         case "data":
-            let text = element.get.allText
+            let text = element.text.all
             // Strip whitespace from Base64 string
             let stripped = text.filter { !$0.isWhitespace }
             guard let bytes = RFC_4648.Base64.decode(stripped) else {
@@ -103,14 +103,15 @@ extension Plist.XML {
             return Plist(.data(bytes))
 
         case "date":
-            guard let text = element.get.text else {
+            let text = String(element)
+            guard !text.isEmpty else {
                 throw .invalidDateFormat("empty")
             }
             return try parseDate(text)
 
         case "array":
             var elements: [Plist.Value] = []
-            for child in element.get.children {
+            for child in element.children() {
                 let parsed = try parseElement(child)
                 elements.append(parsed.value)
             }
@@ -130,18 +131,19 @@ extension Plist.XML {
 extension Plist.XML {
     private static func parseDictionary(_ element: XML) throws(Plist.Error) -> Plist {
         var members: [(key: String, value: Plist.Value)] = []
-        let children = element.get.children
+        let children = element.children()
 
         var index = 0
         while index < children.count {
             let keyElement = children[index]
 
             // Expect <key> element
-            guard keyElement.get.name == "key" else {
-                throw .unexpectedElement(expected: "key", got: keyElement.get.name)
+            guard keyElement.element.name == "key" else {
+                throw .unexpectedElement(expected: "key", got: keyElement.element.name)
             }
 
-            guard let key = keyElement.get.text else {
+            let key = String(keyElement)
+            guard !key.isEmpty else {
                 throw .missingRequiredElement("key text")
             }
 

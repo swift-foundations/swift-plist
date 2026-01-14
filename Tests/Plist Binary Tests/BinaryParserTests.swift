@@ -19,7 +19,7 @@ struct BinaryParserTests {
         ]
 
         let plist = try Plist.Binary.parse(bytes)
-        #expect(plist.string == "hello")
+        #expect(String(plist) == "hello")
     }
 
     @Test("Invalid magic throws error")
@@ -49,7 +49,7 @@ struct BinarySerializerTests {
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)
 
-        #expect(parsed.string == "Hello, Binary!")
+        #expect(String(parsed) == "Hello, Binary!")
     }
 
     @Test("Serialize and parse integer")
@@ -58,7 +58,7 @@ struct BinarySerializerTests {
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)
 
-        #expect(parsed.integer == 12345)
+        #expect(Int64(parsed) == 12345)
     }
 
     @Test("Serialize and parse negative integer")
@@ -67,7 +67,7 @@ struct BinarySerializerTests {
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)
 
-        #expect(parsed.integer == -9999)
+        #expect(Int64(parsed) == -9999)
     }
 
     @Test("Serialize and parse real")
@@ -76,7 +76,7 @@ struct BinarySerializerTests {
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)
 
-        #expect(parsed.real == 3.14159)
+        #expect(Double(parsed) == 3.14159)
     }
 
     @Test("Serialize and parse boolean")
@@ -90,8 +90,8 @@ struct BinarySerializerTests {
         let parsedTrue = try Plist.Binary.parse(trueBytes)
         let parsedFalse = try Plist.Binary.parse(falseBytes)
 
-        #expect(parsedTrue.bool == true)
-        #expect(parsedFalse.bool == false)
+        #expect(Bool(parsedTrue) == true)
+        #expect(Bool(parsedFalse) == false)
     }
 
     @Test("Serialize and parse data")
@@ -115,9 +115,9 @@ struct BinarySerializerTests {
         let parsed = try Plist.Binary.parse(bytes)
 
         #expect(parsed.isArray)
-        #expect(parsed[0].string == "one")
-        #expect(parsed[1].integer == 2)
-        #expect(parsed[2].bool == true)
+        #expect(String(parsed[0]) == "one")
+        #expect(Int64(parsed[1]) == 2)
+        #expect(Bool(parsed[2]) == true)
     }
 
     @Test("Serialize and parse dictionary")
@@ -130,8 +130,8 @@ struct BinarySerializerTests {
         let parsed = try Plist.Binary.parse(bytes)
 
         #expect(parsed.isDictionary)
-        #expect(parsed["name"].string == "Alice")
-        #expect(parsed["score"].integer == 100)
+        #expect(String(parsed["name"]) == "Alice")
+        #expect(Int64(parsed["score"]) == 100)
     }
 
     @Test("Serialize and parse nested structures")
@@ -147,11 +147,11 @@ struct BinarySerializerTests {
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)
 
-        #expect(parsed.user.name.string == "Bob")
-        #expect(parsed.user.tags[0].string == "swift")
-        #expect(parsed.user.tags[1].string == "plist")
-        #expect(parsed.user.tags[2].string == "binary")
-        #expect(parsed.version.integer == 1)
+        #expect(String(parsed.user.name) == "Bob")
+        #expect(String(parsed.user.tags[0]) == "swift")
+        #expect(String(parsed.user.tags[1]) == "plist")
+        #expect(String(parsed.user.tags[2]) == "binary")
+        #expect(Int64(parsed.version) == 1)
     }
 
     @Test("Binary starts with correct magic")
@@ -176,6 +176,6 @@ struct BinarySerializerTests {
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)
 
-        #expect(parsed.string == "Hello, 世界! 🌍")
+        #expect(String(parsed) == "Hello, 世界! 🌍")
     }
 }

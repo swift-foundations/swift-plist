@@ -13,7 +13,7 @@ struct XMLParserTests {
         """
 
         let plist = try Plist.XML.parse(xml)
-        #expect(plist.string == "Hello, World!")
+        #expect(String(plist) == "Hello, World!")
     }
 
     @Test("Parse integer element")
@@ -26,7 +26,7 @@ struct XMLParserTests {
         """
 
         let plist = try Plist.XML.parse(xml)
-        #expect(plist.integer == 42)
+        #expect(Int64(plist) == 42)
     }
 
     @Test("Parse negative integer")
@@ -39,7 +39,7 @@ struct XMLParserTests {
         """
 
         let plist = try Plist.XML.parse(xml)
-        #expect(plist.integer == -100)
+        #expect(Int64(plist) == -100)
     }
 
     @Test("Parse real element")
@@ -52,7 +52,7 @@ struct XMLParserTests {
         """
 
         let plist = try Plist.XML.parse(xml)
-        #expect(plist.real == 3.14159)
+        #expect(Double(plist) == 3.14159)
     }
 
     @Test("Parse true element")
@@ -65,7 +65,7 @@ struct XMLParserTests {
         """
 
         let plist = try Plist.XML.parse(xml)
-        #expect(plist.bool == true)
+        #expect(Bool(plist) == true)
     }
 
     @Test("Parse false element")
@@ -78,7 +78,7 @@ struct XMLParserTests {
         """
 
         let plist = try Plist.XML.parse(xml)
-        #expect(plist.bool == false)
+        #expect(Bool(plist) == false)
     }
 
     @Test("Parse data element")
@@ -125,9 +125,9 @@ struct XMLParserTests {
         let plist = try Plist.XML.parse(xml)
         #expect(plist.isArray)
         #expect(plist.array?.count == 3)
-        #expect(plist[0].string == "one")
-        #expect(plist[1].integer == 2)
-        #expect(plist[2].bool == true)
+        #expect(String(plist[0]) == "one")
+        #expect(Int64(plist[1]) == 2)
+        #expect(Bool(plist[2]) == true)
     }
 
     @Test("Parse dictionary element")
@@ -146,8 +146,8 @@ struct XMLParserTests {
 
         let plist = try Plist.XML.parse(xml)
         #expect(plist.isDictionary)
-        #expect(plist["name"].string == "John")
-        #expect(plist["age"].integer == 30)
+        #expect(String(plist["name"]) == "John")
+        #expect(Int64(plist["age"]) == 30)
     }
 
     @Test("Parse nested structures")
@@ -171,9 +171,9 @@ struct XMLParserTests {
         """
 
         let plist = try Plist.XML.parse(xml)
-        #expect(plist.user.name.string == "Alice")
-        #expect(plist.user.tags[0].string == "swift")
-        #expect(plist.user.tags[1].string == "plist")
+        #expect(String(plist.user.name) == "Alice")
+        #expect(String(plist.user.tags[0]) == "swift")
+        #expect(String(plist.user.tags[1]) == "plist")
     }
 }
 
@@ -237,8 +237,8 @@ struct XMLSerializerTests {
         let bytes = Plist.XML.serialize(original)
         let parsed = try Plist.XML.parse(bytes)
 
-        #expect(parsed["string"].string == "hello")
-        #expect(parsed["number"].integer == 42)
-        #expect(parsed["bool"].bool == true)
+        #expect(String(parsed["string"]) == "hello")
+        #expect(Int64(parsed["number"]) == 42)
+        #expect(Bool(parsed["bool"]) == true)
     }
 }

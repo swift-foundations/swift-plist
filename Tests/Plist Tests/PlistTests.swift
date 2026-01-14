@@ -7,17 +7,17 @@ struct PlistValueTests {
     func stringValue() {
         let plist = Plist.string("hello")
         #expect(plist.isString)
-        #expect(plist.string == "hello")
+        #expect(String(plist) == "hello")
         #expect(!plist.isInteger)
-        #expect(plist.integer == nil)
+        #expect(Int64(plist) == nil)
     }
 
     @Test("Integer creation and access")
     func integerValue() {
         let plist = Plist.integer(42)
         #expect(plist.isInteger)
-        #expect(plist.integer == 42)
-        #expect(plist.int == 42)
+        #expect(Int64(plist) == 42)
+        #expect(Int(plist) == 42)
         #expect(!plist.isString)
     }
 
@@ -25,8 +25,7 @@ struct PlistValueTests {
     func realValue() {
         let plist = Plist.real(3.14)
         #expect(plist.isReal)
-        #expect(plist.real == 3.14)
-        #expect(plist.number == 3.14)
+        #expect(Double(plist) == 3.14)
     }
 
     @Test("Bool creation and access")
@@ -35,8 +34,8 @@ struct PlistValueTests {
         let falseValue = Plist.bool(false)
 
         #expect(trueValue.isBool)
-        #expect(trueValue.bool == true)
-        #expect(falseValue.bool == false)
+        #expect(Bool(trueValue) == true)
+        #expect(Bool(falseValue) == false)
     }
 
     @Test("Data creation and access")
@@ -58,9 +57,9 @@ struct PlistValueTests {
 
         #expect(plist.isArray)
         #expect(plist.array?.count == 3)
-        #expect(plist[0].string == "one")
-        #expect(plist[1].int == 2)
-        #expect(plist[2].bool == true)
+        #expect(String(plist[0]) == "one")
+        #expect(Int(plist[1]) == 2)
+        #expect(Bool(plist[2]) == true)
     }
 
     @Test("Dictionary creation and access")
@@ -71,10 +70,10 @@ struct PlistValueTests {
         ])
 
         #expect(plist.isDictionary)
-        #expect(plist["name"].string == "John")
-        #expect(plist["age"].int == 30)
-        #expect(plist.name.string == "John")
-        #expect(plist.age.int == 30)
+        #expect(String(plist["name"]) == "John")
+        #expect(Int(plist["age"]) == 30)
+        #expect(String(plist.name) == "John")
+        #expect(Int(plist.age) == 30)
     }
 
     @Test("Null access for missing keys")
@@ -83,7 +82,7 @@ struct PlistValueTests {
 
         #expect(plist["missing"].isNull)
         #expect(plist.missing.isNull)
-        #expect(plist.missing.string == nil)
+        #expect(String(plist.missing) == "")
     }
 
     @Test("Subscript out of bounds returns null")
@@ -100,32 +99,32 @@ struct PlistLiteralTests {
     @Test("Boolean literal")
     func boolLiteral() {
         let plist: Plist = true
-        #expect(plist.bool == true)
+        #expect(Bool(plist) == true)
     }
 
     @Test("Integer literal")
     func intLiteral() {
         let plist: Plist = 42
-        #expect(plist.integer == 42)
+        #expect(Int64(plist) == 42)
     }
 
     @Test("Float literal")
     func floatLiteral() {
         let plist: Plist = 3.14
-        #expect(plist.real == 3.14)
+        #expect(Double(plist) == 3.14)
     }
 
     @Test("String literal")
     func stringLiteral() {
         let plist: Plist = "hello"
-        #expect(plist.string == "hello")
+        #expect(String(plist) == "hello")
     }
 
     @Test("Array literal")
     func arrayLiteral() {
         let plist: Plist = [1, 2, 3]
         #expect(plist.array?.count == 3)
-        #expect(plist[0].integer == 1)
+        #expect(Int64(plist[0]) == 1)
     }
 
     @Test("Dictionary literal")
@@ -134,8 +133,8 @@ struct PlistLiteralTests {
             "name": "Alice",
             "age": 25
         ]
-        #expect(plist.name.string == "Alice")
-        #expect(plist.age.integer == 25)
+        #expect(String(plist.name) == "Alice")
+        #expect(Int64(plist.age) == 25)
     }
 
     @Test("Nested literal")
@@ -146,8 +145,8 @@ struct PlistLiteralTests {
                 "tags": ["swift", "plist"]
             ]
         ]
-        #expect(plist.user.name.string == "Bob")
-        #expect(plist.user.tags[0].string == "swift")
+        #expect(String(plist.user.name) == "Bob")
+        #expect(String(plist.user.tags[0]) == "swift")
     }
 }
 
