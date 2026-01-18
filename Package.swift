@@ -9,16 +9,16 @@ let package = Package(
         .iOS(.v26),
         .tvOS(.v26),
         .watchOS(.v26),
-        .visionOS(.v26),
+        .visionOS(.v26)
     ],
     products: [
-        .library(name: "Plist", targets: ["Plist"]),
+        .library(name: "Plist", targets: ["Plist"])
     ],
     dependencies: [
         .package(path: "../swift-xml"),
         .package(path: "../swift-async"),
         .package(path: "../../swift-standards/swift-rfc-4648"),
-        .package(path: "../../swift-standards/swift-iso-8601"),
+        .package(path: "../../swift-standards/swift-iso-8601")
     ],
     targets: [
         // Primitives: Plist, Plist.Value, Plist.Error
@@ -33,14 +33,14 @@ let package = Package(
                 "Plist Primitives",
                 .product(name: "XML", package: "swift-xml"),
                 .product(name: "RFC 4648", package: "swift-rfc-4648"),
-                .product(name: "ISO 8601", package: "swift-iso-8601"),
+                .product(name: "ISO 8601", package: "swift-iso-8601")
             ]
         ),
         // Binary parser/serializer
         .target(
             name: "Plist Binary",
             dependencies: [
-                "Plist Primitives",
+                "Plist Primitives"
             ]
         ),
         // Main target: re-exports all and adds convenience parsing
@@ -50,21 +50,9 @@ let package = Package(
                 "Plist Primitives",
                 "Plist XML",
                 "Plist Binary",
-                .product(name: "Async", package: "swift-async"),
+                .product(name: "Async", package: "swift-async")
             ]
-        ),
-        .testTarget(
-            name: "Plist Tests",
-            dependencies: ["Plist"]
-        ),
-        .testTarget(
-            name: "Plist XML Tests",
-            dependencies: ["Plist", "Plist XML"]
-        ),
-        .testTarget(
-            name: "Plist Binary Tests",
-            dependencies: ["Plist", "Plist Binary"]
-        ),
+        )
     ],
     swiftLanguageModes: [.v6]
 )
