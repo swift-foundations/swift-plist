@@ -52,7 +52,25 @@ let package = Package(
                 "Plist Binary",
                 .product(name: "Async", package: "swift-async")
             ]
-        )
+        ),
+        .testTarget(
+            name: "Plist Tests",
+            dependencies: [
+                "Plist",
+            ]
+        ),
+        .testTarget(
+            name: "Plist XML Tests",
+            dependencies: [
+                "Plist XML",
+            ]
+        ),
+        .testTarget(
+            name: "Plist Binary Tests",
+            dependencies: [
+                "Plist Binary",
+            ]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )
@@ -64,6 +82,7 @@ for target in package.targets where ![.system, .binary, .plugin, .macro].contain
         .enableUpcomingFeature("ExistentialAny"),
         .enableUpcomingFeature("InternalImportsByDefault"),
         .enableUpcomingFeature("MemberImportVisibility"),
+        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
         .enableExperimentalFeature("Lifetimes"),
         .enableExperimentalFeature("SuppressedAssociatedTypes"),
         .enableExperimentalFeature("SuppressedAssociatedTypesWithDefaults"),
