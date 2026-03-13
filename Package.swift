@@ -17,8 +17,8 @@ let package = Package(
     dependencies: [
         .package(path: "../swift-xml"),
         .package(path: "../swift-async"),
-        .package(path: "../../swift-standards/swift-rfc-4648"),
-        .package(path: "../../swift-standards/swift-iso-8601")
+        .package(path: "../../swift-ietf/swift-rfc-4648"),
+        .package(path: "../../swift-iso/swift-iso-8601")
     ],
     targets: [
         // Primitives: Plist, Plist.Value, Plist.Error
