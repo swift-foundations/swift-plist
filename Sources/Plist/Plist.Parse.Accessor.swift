@@ -25,7 +25,7 @@
 /// let plist = try Plist.parse.binary(bytes)
 /// ```
 
-import Plist_Primitives
+import Plist_Core
 import Plist_XML
 import Plist_Binary
 

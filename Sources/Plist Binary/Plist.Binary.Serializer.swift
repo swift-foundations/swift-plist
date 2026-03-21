@@ -1,4 +1,4 @@
-import Plist_Primitives
+import Plist_Core
 
 // MARK: - Serialization
 

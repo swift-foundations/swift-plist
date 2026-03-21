@@ -1,4 +1,4 @@
-import Plist_Primitives
+import Plist_Core
 
 extension Plist.Binary {
     /// Object type markers in binary plist format.

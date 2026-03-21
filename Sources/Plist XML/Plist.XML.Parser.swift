@@ -1,4 +1,4 @@
-import Plist_Primitives
+import Plist_Core
 import XML
 import RFC_4648
 import ISO_8601

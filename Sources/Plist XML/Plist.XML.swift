@@ -3,7 +3,7 @@
 ///
 /// XML plist parsing and serialization.
 
-public import Plist_Primitives
+public import Plist_Core
 import XML
 import RFC_4648
 import ISO_8601

@@ -3,7 +3,7 @@
 ///
 /// Binary plist parsing and serialization.
 
-public import Plist_Primitives
+public import Plist_Core
 
 extension Plist {
     /// Binary plist format namespace.

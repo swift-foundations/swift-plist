@@ -1,4 +1,4 @@
-import Plist_Primitives
+import Plist_Core
 
 extension Plist.Binary {
     /// Binary plist trailer structure (32 bytes at end of file).

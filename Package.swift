@@ -21,16 +21,16 @@ let package = Package(
         .package(path: "../../swift-iso/swift-iso-8601")
     ],
     targets: [
-        // Primitives: Plist, Plist.Value, Plist.Error
+        // Core: Plist, Plist.Value, Plist.Error
         .target(
-            name: "Plist Primitives",
+            name: "Plist Core",
             dependencies: []
         ),
         // XML parser/serializer
         .target(
             name: "Plist XML",
             dependencies: [
-                "Plist Primitives",
+                "Plist Core",
                 .product(name: "XML", package: "swift-xml"),
                 .product(name: "RFC 4648", package: "swift-rfc-4648"),
                 .product(name: "ISO 8601", package: "swift-iso-8601")
@@ -40,14 +40,14 @@ let package = Package(
         .target(
             name: "Plist Binary",
             dependencies: [
-                "Plist Primitives"
+                "Plist Core"
             ]
         ),
         // Main target: re-exports all and adds convenience parsing
         .target(
             name: "Plist",
             dependencies: [
-                "Plist Primitives",
+                "Plist Core",
                 "Plist XML",
                 "Plist Binary",
                 .product(name: "Async", package: "swift-async")
