@@ -21,6 +21,13 @@ extension Plist.Binary {
 
 extension Plist.Binary {
     /// Internal parsing context.
+    // WHY: Category D — structural Sendable workaround.
+    // WHY: Generic Collection<UInt8> parameter blocks structural Sendable
+    // WHY: inference. Single-threaded parser state with mutable parsedObjects.
+    // WHY: No caller invariant to uphold — parse is single-threaded.
+    // WHEN TO REMOVE: When compiler gains structural Sendable inference through
+    // WHEN TO REMOVE: generic Collection parameters.
+    // TRACKING: unsafe-audit-findings.md Category D; SP-4.
     final class Context<Bytes: Collection<UInt8>>: @unchecked Sendable {
         let bytes: Bytes
         let trailer: Trailer
