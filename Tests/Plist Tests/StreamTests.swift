@@ -9,8 +9,8 @@ struct StreamTests {
 
     // MARK: - ND Plist Streaming
 
-    @Test("Parse ND plist stream")
-    func parseNDPlist() async throws {
+    @Test
+    func `Parse ND plist stream`() async throws {
         let input = """
         <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
         <?xml version="1.0"?><plist version="1.0"><integer>2</integer></plist>
@@ -35,8 +35,8 @@ struct StreamTests {
         #expect(values == [1, 2, 3])
     }
 
-    @Test("Skip empty lines in ND plist")
-    func skipEmptyLines() async throws {
+    @Test
+    func `Skip empty lines in ND plist`() async throws {
         let input = """
         <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
 
@@ -62,8 +62,8 @@ struct StreamTests {
         #expect(values == [1, 2])
     }
 
-    @Test("Continue after malformed line")
-    func continueAfterError() async {
+    @Test
+    func `Continue after malformed line`() async {
         let input = """
         <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
         not valid plist
@@ -95,8 +95,8 @@ struct StreamTests {
         #expect(failures == 1)
     }
 
-    @Test("Handle CRLF line endings")
-    func handleCRLF() async throws {
+    @Test
+    func `Handle CRLF line endings`() async throws {
         let input = "<?xml version=\"1.0\"?><plist version=\"1.0\"><integer>1</integer></plist>\r\n<?xml version=\"1.0\"?><plist version=\"1.0\"><integer>2</integer></plist>\r\n"
 
         let bytes = AsyncStream<UInt8> { continuation in
@@ -117,8 +117,8 @@ struct StreamTests {
         #expect(values == [1, 2])
     }
 
-    @Test("Parse without trailing newline")
-    func noTrailingNewline() async throws {
+    @Test
+    func `Parse without trailing newline`() async throws {
         let input = "<?xml version=\"1.0\"?><plist version=\"1.0\"><integer>1</integer></plist>\n<?xml version=\"1.0\"?><plist version=\"1.0\"><integer>2</integer></plist>"
 
         let bytes = AsyncStream<UInt8> { continuation in
@@ -139,8 +139,8 @@ struct StreamTests {
         #expect(values == [1, 2])
     }
 
-    @Test("Reject binary plist in ND stream")
-    func rejectBinaryPlist() async {
+    @Test
+    func `Reject binary plist in ND stream`() async {
         // Binary plist magic: "bplist"
         let input = "bplist00\n"
 
@@ -163,8 +163,8 @@ struct StreamTests {
 
     // MARK: - Single Document Async Parse
 
-    @Test("Parse single document from async bytes")
-    func parseSingleAsync() async throws {
+    @Test
+    func `Parse single document from async bytes`() async throws {
         let input = "<?xml version=\"1.0\"?><plist version=\"1.0\"><dict><key>name</key><string>John</string><key>age</key><integer>30</integer></dict></plist>"
 
         let bytes = AsyncStream<UInt8> { continuation in
@@ -186,8 +186,8 @@ struct StreamTests {
         }
     }
 
-    @Test("Parse via accessor")
-    func parseViaAccessor() async throws {
+    @Test
+    func `Parse via accessor`() async throws {
         let input = """
         <?xml version="1.0"?><plist version="1.0"><string>Hello</string></plist>
         """
@@ -204,8 +204,8 @@ struct StreamTests {
         #expect(plist == Plist.string("Hello"))
     }
 
-    @Test("Stream via accessor")
-    func streamViaAccessor() async throws {
+    @Test
+    func `Stream via accessor`() async throws {
         let input = """
         <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
         <?xml version="1.0"?><plist version="1.0"><integer>2</integer></plist>
@@ -227,8 +227,8 @@ struct StreamTests {
         #expect(count == 2)
     }
 
-    @Test("Parse empty async stream")
-    func parseEmptyAsync() async {
+    @Test
+    func `Parse empty async stream`() async {
         let bytes = AsyncStream<UInt8> { continuation in
             continuation.finish()
         }
@@ -243,8 +243,8 @@ struct StreamTests {
 
     // MARK: - Plist.Serializable Async
 
-    @Test("Deserialize from async bytes")
-    func deserializeAsync() async throws {
+    @Test
+    func `Deserialize from async bytes`() async throws {
         let input = """
         <?xml version="1.0"?><plist version="1.0"><integer>42</integer></plist>
         """

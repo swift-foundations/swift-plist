@@ -3,8 +3,8 @@ import Plist
 
 @Suite("Plist Value Tests")
 struct PlistValueTests {
-    @Test("String creation and access")
-    func stringValue() {
+    @Test
+    func `String creation and access`() {
         let plist = Plist.string("hello")
         #expect(plist.isString)
         #expect(String(plist) == "hello")
@@ -12,8 +12,8 @@ struct PlistValueTests {
         #expect(Int64(plist) == nil)
     }
 
-    @Test("Integer creation and access")
-    func integerValue() {
+    @Test
+    func `Integer creation and access`() {
         let plist = Plist.integer(42)
         #expect(plist.isInteger)
         #expect(Int64(plist) == 42)
@@ -21,15 +21,15 @@ struct PlistValueTests {
         #expect(!plist.isString)
     }
 
-    @Test("Real creation and access")
-    func realValue() {
+    @Test
+    func `Real creation and access`() {
         let plist = Plist.real(3.14)
         #expect(plist.isReal)
         #expect(Double(plist) == 3.14)
     }
 
-    @Test("Bool creation and access")
-    func boolValue() {
+    @Test
+    func `Bool creation and access`() {
         let trueValue = Plist.bool(true)
         let falseValue = Plist.bool(false)
 
@@ -38,8 +38,8 @@ struct PlistValueTests {
         #expect(Bool(falseValue) == false)
     }
 
-    @Test("Data creation and access")
-    func dataValue() {
+    @Test
+    func `Data creation and access`() {
         let bytes: [UInt8] = [0x48, 0x65, 0x6C, 0x6C, 0x6F]
         let plist = Plist.data(bytes)
 
@@ -47,8 +47,8 @@ struct PlistValueTests {
         #expect(plist.data == bytes)
     }
 
-    @Test("Array creation and access")
-    func arrayValue() {
+    @Test
+    func `Array creation and access`() {
         let plist = Plist.array([
             .string("one"),
             .integer(2),
@@ -62,8 +62,8 @@ struct PlistValueTests {
         #expect(Bool(plist[2]) == true)
     }
 
-    @Test("Dictionary creation and access")
-    func dictionaryValue() {
+    @Test
+    func `Dictionary creation and access`() {
         let plist = Plist.dictionary([
             ("name", .string("John")),
             ("age", .integer(30))
@@ -76,8 +76,8 @@ struct PlistValueTests {
         #expect(Int(plist.age) == 30)
     }
 
-    @Test("Null access for missing keys")
-    func nullAccess() {
+    @Test
+    func `Null access for missing keys`() {
         let plist = Plist.dictionary([("key", .string("value"))])
 
         #expect(plist["missing"].isNull)
@@ -85,8 +85,8 @@ struct PlistValueTests {
         #expect(String(plist.missing) == "")
     }
 
-    @Test("Subscript out of bounds returns null")
-    func subscriptOutOfBounds() {
+    @Test
+    func `Subscript out of bounds returns null`() {
         let plist = Plist.array([.integer(1)])
 
         #expect(plist[5].isNull)
@@ -96,39 +96,39 @@ struct PlistValueTests {
 
 @Suite("Plist Literal Tests")
 struct PlistLiteralTests {
-    @Test("Boolean literal")
-    func boolLiteral() {
+    @Test
+    func `Boolean literal`() {
         let plist: Plist = true
         #expect(Bool(plist) == true)
     }
 
-    @Test("Integer literal")
-    func intLiteral() {
+    @Test
+    func `Integer literal`() {
         let plist: Plist = 42
         #expect(Int64(plist) == 42)
     }
 
-    @Test("Float literal")
-    func floatLiteral() {
+    @Test
+    func `Float literal`() {
         let plist: Plist = 3.14
         #expect(Double(plist) == 3.14)
     }
 
-    @Test("String literal")
-    func stringLiteral() {
+    @Test
+    func `String literal`() {
         let plist: Plist = "hello"
         #expect(String(plist) == "hello")
     }
 
-    @Test("Array literal")
-    func arrayLiteral() {
+    @Test
+    func `Array literal`() {
         let plist: Plist = [1, 2, 3]
         #expect(plist.array?.count == 3)
         #expect(Int64(plist[0]) == 1)
     }
 
-    @Test("Dictionary literal")
-    func dictionaryLiteral() {
+    @Test
+    func `Dictionary literal`() {
         let plist: Plist = [
             "name": "Alice",
             "age": 25
@@ -137,8 +137,8 @@ struct PlistLiteralTests {
         #expect(Int64(plist.age) == 25)
     }
 
-    @Test("Nested literal")
-    func nestedLiteral() {
+    @Test
+    func `Nested literal`() {
         let plist: Plist = [
             "user": [
                 "name": "Bob",
@@ -152,29 +152,29 @@ struct PlistLiteralTests {
 
 @Suite("Plist Format Detection Tests")
 struct PlistFormatTests {
-    @Test("Detect XML format with declaration")
-    func detectXMLWithDeclaration() {
+    @Test
+    func `Detect XML format with declaration`() {
         let xml = "<?xml version=\"1.0\"?><plist></plist>"
         let format = Plist.Format.detect(Array(xml.utf8))
         #expect(format == .xml)
     }
 
-    @Test("Detect XML format with plist tag")
-    func detectXMLWithPlist() {
+    @Test
+    func `Detect XML format with plist tag`() {
         let xml = "<plist version=\"1.0\"><dict></dict></plist>"
         let format = Plist.Format.detect(Array(xml.utf8))
         #expect(format == .xml)
     }
 
-    @Test("Detect binary format")
-    func detectBinary() {
+    @Test
+    func `Detect binary format`() {
         let binary: [UInt8] = [0x62, 0x70, 0x6C, 0x69, 0x73, 0x74, 0x30, 0x30] // "bplist00"
         let format = Plist.Format.detect(binary)
         #expect(format == .binary)
     }
 
-    @Test("Unknown format")
-    func unknownFormat() {
+    @Test
+    func `Unknown format`() {
         let unknown: [UInt8] = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05]
         let format = Plist.Format.detect(unknown)
         #expect(format == nil)

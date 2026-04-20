@@ -3,8 +3,8 @@ import Plist_Binary
 
 @Suite("Plist Binary Parser Tests")
 struct BinaryParserTests {
-    @Test("Parse simple binary plist with string")
-    func parseString() throws {
+    @Test
+    func `Parse simple binary plist with string`() throws {
         // A minimal binary plist containing the string "hello"
         // Created by: plutil -convert binary1 -o - <(echo '<?xml version="1.0"?><plist><string>hello</string></plist>')
         let bytes: [UInt8] = [
@@ -22,8 +22,8 @@ struct BinaryParserTests {
         #expect(String(plist) == "hello")
     }
 
-    @Test("Invalid magic throws error")
-    func invalidMagic() {
+    @Test
+    func `Invalid magic throws error`() {
         let bytes: [UInt8] = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
 
         #expect(throws: Plist.Error.self) {
@@ -31,8 +31,8 @@ struct BinaryParserTests {
         }
     }
 
-    @Test("Empty data throws error")
-    func emptyData() {
+    @Test
+    func `Empty data throws error`() {
         let bytes: [UInt8] = []
 
         #expect(throws: Plist.Error.self) {
@@ -43,8 +43,8 @@ struct BinaryParserTests {
 
 @Suite("Plist Binary Serializer Tests")
 struct BinarySerializerTests {
-    @Test("Serialize and parse string")
-    func roundTripString() throws {
+    @Test
+    func `Serialize and parse string`() throws {
         let original = Plist.string("Hello, Binary!")
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)
@@ -52,8 +52,8 @@ struct BinarySerializerTests {
         #expect(String(parsed) == "Hello, Binary!")
     }
 
-    @Test("Serialize and parse integer")
-    func roundTripInteger() throws {
+    @Test
+    func `Serialize and parse integer`() throws {
         let original = Plist.integer(12345)
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)
@@ -61,8 +61,8 @@ struct BinarySerializerTests {
         #expect(Int64(parsed) == 12345)
     }
 
-    @Test("Serialize and parse negative integer")
-    func roundTripNegativeInteger() throws {
+    @Test
+    func `Serialize and parse negative integer`() throws {
         let original = Plist.integer(-9999)
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)
@@ -70,8 +70,8 @@ struct BinarySerializerTests {
         #expect(Int64(parsed) == -9999)
     }
 
-    @Test("Serialize and parse real")
-    func roundTripReal() throws {
+    @Test
+    func `Serialize and parse real`() throws {
         let original = Plist.real(3.14159)
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)
@@ -79,8 +79,8 @@ struct BinarySerializerTests {
         #expect(Double(parsed) == 3.14159)
     }
 
-    @Test("Serialize and parse boolean")
-    func roundTripBoolean() throws {
+    @Test
+    func `Serialize and parse boolean`() throws {
         let trueValue = Plist.bool(true)
         let falseValue = Plist.bool(false)
 
@@ -94,8 +94,8 @@ struct BinarySerializerTests {
         #expect(Bool(parsedFalse) == false)
     }
 
-    @Test("Serialize and parse data")
-    func roundTripData() throws {
+    @Test
+    func `Serialize and parse data`() throws {
         let bytes: [UInt8] = [0x01, 0x02, 0x03, 0x04, 0x05]
         let original = Plist.data(bytes)
         let serialized = Plist.Binary.serialize(original)
@@ -104,8 +104,8 @@ struct BinarySerializerTests {
         #expect(parsed.data == bytes)
     }
 
-    @Test("Serialize and parse array")
-    func roundTripArray() throws {
+    @Test
+    func `Serialize and parse array`() throws {
         let original = Plist.array([
             .string("one"),
             .integer(2),
@@ -120,8 +120,8 @@ struct BinarySerializerTests {
         #expect(Bool(parsed[2]) == true)
     }
 
-    @Test("Serialize and parse dictionary")
-    func roundTripDictionary() throws {
+    @Test
+    func `Serialize and parse dictionary`() throws {
         let original = Plist.dictionary([
             ("name", .string("Alice")),
             ("score", .integer(100))
@@ -134,8 +134,8 @@ struct BinarySerializerTests {
         #expect(Int64(parsed["score"]) == 100)
     }
 
-    @Test("Serialize and parse nested structures")
-    func roundTripNested() throws {
+    @Test
+    func `Serialize and parse nested structures`() throws {
         let original: Plist = [
             "user": [
                 "name": "Bob",
@@ -154,8 +154,8 @@ struct BinarySerializerTests {
         #expect(Int64(parsed.version) == 1)
     }
 
-    @Test("Binary starts with correct magic")
-    func binaryMagic() {
+    @Test
+    func `Binary starts with correct magic`() {
         let plist = Plist.string("test")
         let bytes = Plist.Binary.serialize(plist)
 
@@ -170,8 +170,8 @@ struct BinarySerializerTests {
         #expect(bytes[7] == 0x30) // '0'
     }
 
-    @Test("Unicode string round-trip")
-    func unicodeRoundTrip() throws {
+    @Test
+    func `Unicode string round-trip`() throws {
         let original = Plist.string("Hello, 世界! 🌍")
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)

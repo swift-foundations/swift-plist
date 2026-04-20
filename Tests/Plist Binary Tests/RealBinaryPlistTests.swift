@@ -27,8 +27,8 @@ private func readFile(_ path: String) -> [UInt8]? {
 
 @Suite("Real Binary Plist Tests")
 struct RealBinaryPlistTests {
-    @Test("Parse com.apple.finder.plist")
-    func parseFinderPlist() throws {
+    @Test
+    func `Parse com.apple.finder.plist`() throws {
         let path = "/Users/coen/Library/Preferences/com.apple.finder.plist"
 
         guard let bytes = readFile(path) else {
@@ -52,8 +52,8 @@ struct RealBinaryPlistTests {
         }
     }
 
-    @Test("Parse com.apple.dock.plist")
-    func parseDockPlist() throws {
+    @Test
+    func `Parse com.apple.dock.plist`() throws {
         let path = "/Users/coen/Library/Preferences/com.apple.dock.plist"
 
         guard let bytes = readFile(path) else {
@@ -79,8 +79,8 @@ struct RealBinaryPlistTests {
         }
     }
 
-    @Test("Parse any available binary plist")
-    func parseAnyBinaryPlist() throws {
+    @Test
+    func `Parse any available binary plist`() throws {
         // Try several common binary plist locations
         let candidates = [
             "/Users/coen/Library/Preferences/com.apple.finder.plist",
