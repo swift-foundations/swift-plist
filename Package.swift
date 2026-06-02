@@ -15,10 +15,10 @@ let package = Package(
         .library(name: "Plist", targets: ["Plist"])
     ],
     dependencies: [
-        .package(path: "../swift-xml"),
-        .package(path: "../swift-async"),
-        .package(path: "../../swift-ietf/swift-rfc-4648"),
-        .package(path: "../../swift-iso/swift-iso-8601")
+        .package(url: "https://github.com/swift-foundations/swift-xml.git", branch: "main"),
+        .package(url: "https://github.com/swift-foundations/swift-async.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-4648.git", branch: "main"),
+        .package(url: "https://github.com/swift-iso/swift-iso-8601.git", branch: "main")
     ],
     targets: [
         // Core: Plist, Plist.Value, Plist.Error
