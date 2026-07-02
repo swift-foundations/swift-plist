@@ -13,7 +13,7 @@ extension Plist {
     public static func parse<Bytes>(
         _ bytes: Bytes
     ) throws(Plist.Error) -> Plist
-    where Bytes: Collection<UInt8>, Bytes: Sendable {
+    where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
         guard let format = Format.detect(bytes) else {
             throw .unknownFormat
         }
@@ -45,7 +45,7 @@ extension Plist {
     public static func parse<Bytes>(
         binary bytes: Bytes
     ) throws(Plist.Error) -> Plist
-    where Bytes: Collection<UInt8> {
+    where Bytes: Swift.Collection<UInt8> {
         try Binary.parse(bytes)
     }
 }
@@ -87,7 +87,7 @@ extension Plist.Serializable {
     public init<Bytes>(
         plistBytes bytes: Bytes
     ) throws(Plist.Error)
-    where Bytes: Collection<UInt8>, Bytes: Sendable {
+    where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
         let plist = try Plist.parse(bytes)
         self = try Self.deserialize(plist)
     }

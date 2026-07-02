@@ -11,7 +11,7 @@ extension Plist.Binary {
     public static func parse<Bytes>(
         _ bytes: Bytes
     ) throws(Plist.Error) -> Plist
-    where Bytes: Collection<UInt8> {
+    where Bytes: Swift.Collection<UInt8> {
         let context = try Context(bytes)
         return try context.parseRoot()
     }
@@ -28,7 +28,7 @@ extension Plist.Binary {
     // WHEN TO REMOVE: When compiler gains structural Sendable inference through
     // WHEN TO REMOVE: generic Collection parameters.
     // TRACKING: unsafe-audit-findings.md Category D; SP-4.
-    final class Context<Bytes: Collection<UInt8>>: @unchecked Sendable {
+    final class Context<Bytes: Swift.Collection<UInt8>>: @unchecked Sendable {
         let bytes: Bytes
         let trailer: Trailer
         let offsets: [UInt64]

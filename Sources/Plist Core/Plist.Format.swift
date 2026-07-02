@@ -18,7 +18,7 @@ extension Plist.Format {
     /// - Returns: The detected format, or `nil` if the format cannot be determined.
     @inlinable
     public static func detect<Bytes>(_ bytes: Bytes) -> Plist.Format?
-    where Bytes: Collection<UInt8> {
+    where Bytes: Swift.Collection<UInt8> {
         guard bytes.count >= 6 else { return nil }
 
         var iterator = bytes.makeIterator()

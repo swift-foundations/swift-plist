@@ -25,7 +25,7 @@ struct StreamTests {
         }
 
         var values: [Int] = []
-        for await result in Plist.ND.stream(bytes) {
+        for result in try await collect(Plist.ND.stream(bytes)) {
             let plist = try result.get()
             if case .integer(let value) = plist.value {
                 values.append(Int(value))
@@ -52,7 +52,7 @@ struct StreamTests {
         }
 
         var values: [Int] = []
-        for await result in Plist.ND.stream(bytes) {
+        for result in try await collect(Plist.ND.stream(bytes)) {
             let plist = try result.get()
             if case .integer(let value) = plist.value {
                 values.append(Int(value))
@@ -63,7 +63,7 @@ struct StreamTests {
     }
 
     @Test
-    func `Continue after malformed line`() async {
+    func `Continue after malformed line`() async throws {
         let input = """
         <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
         not valid plist
@@ -80,7 +80,7 @@ struct StreamTests {
         var successes: [Int] = []
         var failures = 0
 
-        for await result in Plist.ND.stream(bytes) {
+        for result in try await collect(Plist.ND.stream(bytes)) {
             switch result {
             case .success(let plist):
                 if case .integer(let value) = plist.value {
@@ -107,7 +107,7 @@ struct StreamTests {
         }
 
         var values: [Int] = []
-        for await result in Plist.ND.stream(bytes) {
+        for result in try await collect(Plist.ND.stream(bytes)) {
             let plist = try result.get()
             if case .integer(let value) = plist.value {
                 values.append(Int(value))
@@ -129,7 +129,7 @@ struct StreamTests {
         }
 
         var values: [Int] = []
-        for await result in Plist.ND.stream(bytes) {
+        for result in try await collect(Plist.ND.stream(bytes)) {
             let plist = try result.get()
             if case .integer(let value) = plist.value {
                 values.append(Int(value))
@@ -140,7 +140,7 @@ struct StreamTests {
     }
 
     @Test
-    func `Reject binary plist in ND stream`() async {
+    func `Reject binary plist in ND stream`() async throws {
         // Binary plist magic: "bplist"
         let input = "bplist00\n"
 
@@ -152,7 +152,7 @@ struct StreamTests {
         }
 
         var failures = 0
-        for await result in Plist.ND.stream(bytes) {
+        for result in try await collect(Plist.ND.stream(bytes)) {
             if case .failure = result {
                 failures += 1
             }
@@ -219,7 +219,7 @@ struct StreamTests {
         }
 
         var count = 0
-        for await result in Plist.parse.stream(nd: bytes) {
+        for result in try await collect(Plist.parse.stream(nd: bytes)) {
             _ = try result.get()
             count += 1
         }
@@ -262,4 +262,14 @@ struct StreamTests {
 
         #expect(value == 42)
     }
+}
+
+/// Iterates through `AsyncSequence` protocol dispatch: the concrete
+/// iterator member lives in swift-async's internal-only Async Stream Core
+/// module, so direct `for await` over the concrete stream type fails
+/// MemberImportVisibility.
+private func collect<S: AsyncSequence>(_ sequence: S) async throws -> [S.Element] {
+    var elements: [S.Element] = []
+    for try await element in sequence { elements.append(element) }
+    return elements
 }

@@ -3,7 +3,7 @@
 ///
 /// Async Plist parsing support
 
-import Async
+public import Async
 
 // MARK: - Async Parse
 

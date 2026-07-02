@@ -15,6 +15,7 @@ let package = Package(
         .library(name: "Plist", targets: ["Plist"])
     ],
     dependencies: [
+        .package(url: "https://github.com/swift-primitives/swift-byte-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-foundations/swift-xml.git", branch: "main"),
         .package(url: "https://github.com/swift-foundations/swift-async.git", branch: "main"),
         .package(url: "https://github.com/swift-ietf/swift-rfc-4648.git", branch: "main"),
@@ -31,6 +32,7 @@ let package = Package(
             name: "Plist XML",
             dependencies: [
                 "Plist Core",
+                .product(name: "Byte Primitive", package: "swift-byte-primitives"),
                 .product(name: "XML", package: "swift-xml"),
                 .product(name: "RFC 4648", package: "swift-rfc-4648"),
                 .product(name: "ISO 8601", package: "swift-iso-8601")

@@ -58,7 +58,7 @@ extension Plist {
         public func callAsFunction<Bytes>(
             _ bytes: Bytes
         ) throws(Plist.Error) -> Plist
-        where Bytes: Collection<UInt8>, Bytes: Sendable {
+        where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
             guard let format = Format.detect(bytes) else {
                 throw .unknownFormat
             }
@@ -90,7 +90,7 @@ extension Plist {
         public func xml<Bytes>(
             _ bytes: Bytes
         ) throws(Plist.Error) -> Plist
-        where Bytes: Collection<UInt8>, Bytes: Sendable {
+        where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
             try XML.parse(bytes)
         }
 
@@ -103,7 +103,7 @@ extension Plist {
         public func binary<Bytes>(
             _ bytes: Bytes
         ) throws(Plist.Error) -> Plist
-        where Bytes: Collection<UInt8> {
+        where Bytes: Swift.Collection<UInt8> {
             try Binary.parse(bytes)
         }
     }
@@ -215,7 +215,7 @@ extension Plist {
         public func parse<Bytes>(
             _ bytes: Bytes
         ) throws(Plist.Error) -> Plist
-        where Bytes: Collection<UInt8>, Bytes: Sendable {
+        where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
             try Plist.parse(bytes)
         }
 
@@ -238,7 +238,7 @@ extension Plist {
         public func xml<Bytes>(
             _ bytes: Bytes
         ) throws(Plist.Error) -> Plist
-        where Bytes: Collection<UInt8>, Bytes: Sendable {
+        where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
             try XML.parse(bytes)
         }
 
@@ -251,7 +251,7 @@ extension Plist {
         public func binary<Bytes>(
             _ bytes: Bytes
         ) throws(Plist.Error) -> Plist
-        where Bytes: Collection<UInt8> {
+        where Bytes: Swift.Collection<UInt8> {
             try Binary.parse(bytes)
         }
     }
@@ -287,7 +287,7 @@ extension Plist {
         public func parse<Bytes>(
             _ bytes: Bytes
         ) throws(Plist.LocatedError) -> Plist
-        where Bytes: Collection<UInt8>, Bytes: Sendable {
+        where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
             guard let format = Format.detect(bytes) else {
                 throw Plist.LocatedError(.unknownFormat, at: 0)
             }
@@ -309,7 +309,7 @@ extension Plist {
         public func xml<Bytes>(
             _ bytes: Bytes
         ) throws(Plist.LocatedError) -> Plist
-        where Bytes: Collection<UInt8>, Bytes: Sendable {
+        where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
             do {
                 return try XML.parse(bytes)
             } catch let error {
@@ -326,7 +326,7 @@ extension Plist {
         public func binary<Bytes>(
             _ bytes: Bytes
         ) throws(Plist.LocatedError) -> Plist
-        where Bytes: Collection<UInt8> {
+        where Bytes: Swift.Collection<UInt8> {
             do {
                 return try Binary.parse(bytes)
             } catch let error {

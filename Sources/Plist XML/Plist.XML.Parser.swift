@@ -1,5 +1,6 @@
 import Plist_Core
 import XML
+internal import Byte_Primitive
 import RFC_4648
 import ISO_8601
 
@@ -30,7 +31,7 @@ extension Plist.XML {
     public static func parse<Bytes>(
         _ bytes: Bytes
     ) throws(Plist.Error) -> Plist
-    where Bytes: Collection<UInt8>, Bytes: Sendable {
+    where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
         let doc: XML.Document
         do throws(XML.Error) {
             doc = try XML.parse(bytes)
@@ -100,7 +101,7 @@ extension Plist.XML {
             guard let bytes = RFC_4648.Base64.decode(stripped) else {
                 throw .invalidBase64Data
             }
-            return Plist(.data(bytes))
+            return Plist(.data(bytes.map(\.underlying)))
 
         case "date":
             let text = String(element)
@@ -177,13 +178,13 @@ extension Plist.XML {
         // ISO 8601 format: 2024-01-15T12:30:00Z
         let dateTime: ISO_8601.DateTime
         do {
-            dateTime = try ISO_8601.DateTime.Parser.parse(text)
+            dateTime = try ISO_8601.DateTime(text)
         } catch {
             throw .invalidDateFormat(text)
         }
 
         // Convert from Unix epoch seconds to Apple reference date seconds
-        let unixSeconds = dateTime.secondsSinceEpoch
+        let unixSeconds = dateTime.epoch.seconds
         let nanoseconds = dateTime.nanoseconds
         let appleSeconds = Double(unixSeconds - appleReferenceEpochOffset)
             + Double(nanoseconds) / 1_000_000_000

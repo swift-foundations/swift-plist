@@ -1,5 +1,6 @@
 import Plist_Core
 import XML
+internal import Byte_Primitive
 import RFC_4648
 import ISO_8601
 
@@ -64,8 +65,8 @@ extension Plist.XML {
             return flag ? XML.element("true") : XML.element("false")
 
         case let .data(bytes):
-            let base64 = RFC_4648.Base64.encode(bytes, padding: true)
-            let base64String = String(decoding: base64, as: UTF8.self)
+            let base64 = RFC_4648.Base64.encode(bytes.lazy.map(Byte.init), padding: true)
+            let base64String = String(decoding: base64.lazy.map(\.underlying), as: UTF8.self)
             return XML.element("data", text: base64String)
 
         case let .date(secondsSinceRef):

@@ -46,7 +46,7 @@ extension Plist.Binary.Trailer {
     static func parse<Bytes>(
         from bytes: Bytes
     ) throws(Plist.Error) -> Plist.Binary.Trailer
-    where Bytes: Collection<UInt8> {
+    where Bytes: Swift.Collection<UInt8> {
         guard bytes.count >= size else {
             throw .invalidTrailer
         }
@@ -102,7 +102,7 @@ extension Plist.Binary.Trailer {
     private static func readBigEndianUInt64<Bytes>(
         _ bytes: Bytes,
         at index: inout Bytes.Index
-    ) -> UInt64 where Bytes: Collection<UInt8> {
+    ) -> UInt64 where Bytes: Swift.Collection<UInt8> {
         var result: UInt64 = 0
         for _ in 0..<8 {
             result = (result << 8) | UInt64(bytes[index])
