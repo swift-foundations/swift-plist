@@ -1,6 +1,6 @@
 # .github/metadata.yaml
 # Triaged by AI-assisted bulk pass (2026-04-29).
-description: "Plist for Swift."
+description: "Property list parsing and serialization with auto-detected XML/binary formats and null-safe dynamic-member navigation for Swift."
 topics:
   - foundations
   - plist
