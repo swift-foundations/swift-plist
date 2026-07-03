@@ -1,4 +1,4 @@
-/// Extensions for converting Plist values to Double.
+// Extensions for converting Plist values to Double.
 
 // MARK: - Double from Plist
 
@@ -14,8 +14,10 @@ extension Double {
         switch plist.raw {
         case .real(let value):
             self = value
+
         case .integer(let value):
             self = Double(value)
+
         default:
             return nil
         }
@@ -36,8 +38,10 @@ extension Float {
         switch plist.raw {
         case .real(let value):
             self = Float(value)
+
         case .integer(let value):
             self = Float(value)
+
         default:
             return nil
         }

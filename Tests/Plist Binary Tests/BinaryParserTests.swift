@@ -1,5 +1,5 @@
-import Testing
 import Plist_Binary
+import Testing
 
 @Suite("Plist Binary Parser Tests")
 struct BinaryParserTests {
@@ -8,14 +8,14 @@ struct BinaryParserTests {
         // A minimal binary plist containing the string "hello"
         // Created by: plutil -convert binary1 -o - <(echo '<?xml version="1.0"?><plist><string>hello</string></plist>')
         let bytes: [UInt8] = [
-            0x62, 0x70, 0x6C, 0x69, 0x73, 0x74, 0x30, 0x30, // "bplist00"
-            0x55, 0x68, 0x65, 0x6C, 0x6C, 0x6F,             // string marker (0x55) + "hello"
-            0x08,                                           // offset table (single entry = 8)
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // trailer: unused[5], sortVersion, offsetIntSize, objectRefSize
-            0x01, 0x01,                                     // offsetIntSize=1, objectRefSize=1
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, // numObjects=1
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // topObject=0
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0E  // offsetTableOffset=14
+            0x62, 0x70, 0x6C, 0x69, 0x73, 0x74, 0x30, 0x30,  // "bplist00"
+            0x55, 0x68, 0x65, 0x6C, 0x6C, 0x6F,  // string marker (0x55) + "hello"
+            0x08,  // offset table (single entry = 8)
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // trailer: unused[5], sortVersion, offsetIntSize, objectRefSize
+            0x01, 0x01,  // offsetIntSize=1, objectRefSize=1
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,  // numObjects=1
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // topObject=0
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0E,  // offsetTableOffset=14
         ]
 
         let plist = try Plist.Binary.parse(bytes)
@@ -109,7 +109,7 @@ struct BinarySerializerTests {
         let original = Plist.array([
             .string("one"),
             .integer(2),
-            .bool(true)
+            .bool(true),
         ])
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)
@@ -124,7 +124,7 @@ struct BinarySerializerTests {
     func `Serialize and parse dictionary`() throws {
         let original = Plist.dictionary([
             ("name", .string("Alice")),
-            ("score", .integer(100))
+            ("score", .integer(100)),
         ])
         let bytes = Plist.Binary.serialize(original)
         let parsed = try Plist.Binary.parse(bytes)
@@ -139,9 +139,9 @@ struct BinarySerializerTests {
         let original: Plist = [
             "user": [
                 "name": "Bob",
-                "tags": ["swift", "plist", "binary"]
+                "tags": ["swift", "plist", "binary"],
             ],
-            "version": 1
+            "version": 1,
         ]
 
         let bytes = Plist.Binary.serialize(original)
@@ -160,14 +160,14 @@ struct BinarySerializerTests {
         let bytes = Plist.Binary.serialize(plist)
 
         #expect(bytes.count >= 8)
-        #expect(bytes[0] == 0x62) // 'b'
-        #expect(bytes[1] == 0x70) // 'p'
-        #expect(bytes[2] == 0x6C) // 'l'
-        #expect(bytes[3] == 0x69) // 'i'
-        #expect(bytes[4] == 0x73) // 's'
-        #expect(bytes[5] == 0x74) // 't'
-        #expect(bytes[6] == 0x30) // '0'
-        #expect(bytes[7] == 0x30) // '0'
+        #expect(bytes[0] == 0x62)  // 'b'
+        #expect(bytes[1] == 0x70)  // 'p'
+        #expect(bytes[2] == 0x6C)  // 'l'
+        #expect(bytes[3] == 0x69)  // 'i'
+        #expect(bytes[4] == 0x73)  // 's'
+        #expect(bytes[5] == 0x74)  // 't'
+        #expect(bytes[6] == 0x30)  // '0'
+        #expect(bytes[7] == 0x30)  // '0'
     }
 
     @Test

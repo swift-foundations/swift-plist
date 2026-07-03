@@ -1,4 +1,4 @@
-/// Extensions for converting Plist values to String.
+// Extensions for converting Plist values to String.
 
 // MARK: - String from Plist
 
@@ -27,7 +27,7 @@ extension String {
     /// - Parameter plist: The Plist value.
     @inlinable
     public init?(_ plist: Plist?) {
-        guard let plist = plist else { return nil }
+        guard let plist else { return nil }
         guard case .string(let value) = plist.raw else { return nil }
         self = value
     }

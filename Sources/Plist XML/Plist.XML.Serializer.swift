@@ -1,8 +1,8 @@
-import Plist_Core
-import XML
 internal import Byte_Primitive
-import RFC_4648
 import ISO_8601
+import Plist_Core
+import RFC_4648
+import XML
 
 // MARK: - Serialization
 
@@ -43,13 +43,13 @@ extension Plist.XML {
 extension Plist.XML {
     private static func serializeValue(_ value: Plist.Value) -> XML {
         switch value {
-        case let .string(text):
+        case .string(let text):
             return XML.element("string", text: text)
 
-        case let .integer(number):
+        case .integer(let number):
             return XML.element("integer", text: String(number))
 
-        case let .real(number):
+        case .real(let number):
             // Format real numbers without unnecessary precision
             let text: String
             if number.truncatingRemainder(dividingBy: 1) == 0 {
@@ -61,23 +61,23 @@ extension Plist.XML {
             }
             return XML.element("real", text: text)
 
-        case let .bool(flag):
+        case .bool(let flag):
             return flag ? XML.element("true") : XML.element("false")
 
-        case let .data(bytes):
+        case .data(let bytes):
             let base64 = RFC_4648.Base64.encode(bytes.lazy.map(Byte.init), padding: true)
             let base64String = String(decoding: base64.lazy.map(\.underlying), as: UTF8.self)
             return XML.element("data", text: base64String)
 
-        case let .date(secondsSinceRef):
+        case .date(let secondsSinceRef):
             let text = formatDate(secondsSinceRef)
             return XML.element("date", text: text)
 
-        case let .array(elements):
+        case .array(let elements):
             let children = elements.map { serializeValue($0) }
             return XML.element("array", children: children)
 
-        case let .dictionary(members):
+        case .dictionary(let members):
             var children: [XML] = []
             for member in members {
                 children.append(XML.element("key", text: member.key))
@@ -104,11 +104,14 @@ extension Plist.XML {
         let nanoseconds = Int(fractionalPart * 1_000_000_000)
 
         // Create DateTime and format it
-        guard let dateTime = try? ISO_8601.DateTime(
-            secondsSinceEpoch: unixSeconds,
-            nanoseconds: nanoseconds,
-            timezoneOffsetSeconds: 0
-        ) else {
+        let dateTime: ISO_8601.DateTime
+        do throws(ISO_8601.Date.Error) {
+            dateTime = try ISO_8601.DateTime(
+                secondsSinceEpoch: unixSeconds,
+                nanoseconds: nanoseconds,
+                timezoneOffsetSeconds: 0
+            )
+        } catch {
             // Fallback: return a basic representation
             return "2001-01-01T00:00:00Z"
         }

@@ -1,8 +1,8 @@
-import Plist_Core
-import XML
 internal import Byte_Primitive
-import RFC_4648
 import ISO_8601
+import Plist_Core
+import RFC_4648
+import XML
 
 // MARK: - Parsing
 
@@ -186,7 +186,8 @@ extension Plist.XML {
         // Convert from Unix epoch seconds to Apple reference date seconds
         let unixSeconds = dateTime.epoch.seconds
         let nanoseconds = dateTime.nanoseconds
-        let appleSeconds = Double(unixSeconds - appleReferenceEpochOffset)
+        let appleSeconds =
+            Double(unixSeconds - appleReferenceEpochOffset)
             + Double(nanoseconds) / 1_000_000_000
 
         return Plist(.date(appleSeconds))

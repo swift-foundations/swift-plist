@@ -6,7 +6,7 @@ extension Plist {
     /// Returns `.null` if this is not a dictionary or if the key is not found.
     @inlinable
     public subscript(key: String) -> Plist {
-        guard case let .dictionary(members) = raw else {
+        guard case .dictionary(let members) = raw else {
             return .null
         }
         for member in members {
@@ -22,7 +22,7 @@ extension Plist {
     /// Returns `.null` if this is not an array or if the index is out of bounds.
     @inlinable
     public subscript(index: Int) -> Plist {
-        guard case let .array(elements) = raw else {
+        guard case .array(let elements) = raw else {
             return .null
         }
         guard index >= 0, index < elements.count else {

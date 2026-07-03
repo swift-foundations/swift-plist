@@ -23,12 +23,12 @@ public enum _Raw: Sendable, Hashable {
     case date(Double)
 
     /// An ordered array (`<array>` in XML).
-    case array([_Raw])
+    case array([Self])
 
     /// A key-value dictionary (`<dict>` in XML).
     ///
     /// Keys are always strings. Order is preserved.
-    case dictionary([(key: String, value: _Raw)])
+    case dictionary([(key: String, value: Self)])
 
     /// A null placeholder for missing or invalid values.
     ///
@@ -41,32 +41,42 @@ public enum _Raw: Sendable, Hashable {
 extension _Raw {
     public static func == (lhs: _Raw, rhs: _Raw) -> Bool {
         switch (lhs, rhs) {
-        case let (.string(l), .string(r)):
+        case (.string(let l), .string(let r)):
             return l == r
-        case let (.integer(l), .integer(r)):
+
+        case (.integer(let l), .integer(let r)):
             return l == r
-        case let (.real(l), .real(r)):
+
+        case (.real(let l), .real(let r)):
             return l == r
-        case let (.bool(l), .bool(r)):
+
+        case (.bool(let l), .bool(let r)):
             return l == r
-        case let (.data(l), .data(r)):
+
+        case (.data(let l), .data(let r)):
             return l == r
-        case let (.date(l), .date(r)):
+
+        case (.date(let l), .date(let r)):
             return l == r
-        case let (.array(l), .array(r)):
+
+        case (.array(let l), .array(let r)):
             return l == r
-        case let (.dictionary(l), .dictionary(r)):
+
+        case (.dictionary(let l), .dictionary(let r)):
             guard l.count == r.count else { return false }
             for (index, lElement) in l.enumerated() {
                 let rElement = r[index]
                 guard lElement.key == rElement.key,
-                      lElement.value == rElement.value else {
+                    lElement.value == rElement.value
+                else {
                     return false
                 }
             }
             return true
+
         case (.null, .null):
             return true
+
         default:
             return false
         }
@@ -74,33 +84,41 @@ extension _Raw {
 
     public func hash(into hasher: inout Hasher) {
         switch self {
-        case let .string(value):
+        case .string(let value):
             hasher.combine(0)
             hasher.combine(value)
-        case let .integer(value):
+
+        case .integer(let value):
             hasher.combine(1)
             hasher.combine(value)
-        case let .real(value):
+
+        case .real(let value):
             hasher.combine(2)
             hasher.combine(value)
-        case let .bool(value):
+
+        case .bool(let value):
             hasher.combine(3)
             hasher.combine(value)
-        case let .data(value):
+
+        case .data(let value):
             hasher.combine(4)
             hasher.combine(value)
-        case let .date(value):
+
+        case .date(let value):
             hasher.combine(5)
             hasher.combine(value)
-        case let .array(value):
+
+        case .array(let value):
             hasher.combine(6)
             hasher.combine(value)
-        case let .dictionary(value):
+
+        case .dictionary(let value):
             hasher.combine(7)
             for element in value {
                 hasher.combine(element.key)
                 hasher.combine(element.value)
             }
+
         case .null:
             hasher.combine(8)
         }

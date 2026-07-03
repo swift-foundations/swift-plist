@@ -1,4 +1,4 @@
-/// Extensions for converting Plist values to Int.
+// Extensions for converting Plist values to Int.
 
 // MARK: - Int from Plist
 

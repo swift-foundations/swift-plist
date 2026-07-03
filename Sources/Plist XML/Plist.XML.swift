@@ -3,10 +3,10 @@
 ///
 /// XML plist parsing and serialization.
 
-public import Plist_Core
-import XML
-import RFC_4648
 import ISO_8601
+public import Plist_Core
+import RFC_4648
+import XML
 
 extension Plist {
     /// XML plist format namespace.

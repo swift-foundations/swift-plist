@@ -25,9 +25,9 @@
 /// let plist = try Plist.parse.binary(bytes)
 /// ```
 
+import Plist_Binary
 import Plist_Core
 import Plist_XML
-import Plist_Binary
 
 // MARK: - Parse Accessor
 
@@ -66,6 +66,7 @@ extension Plist {
             switch format {
             case .xml:
                 return try XML.parse(bytes)
+
             case .binary:
                 return try Binary.parse(bytes)
             }
@@ -295,6 +296,7 @@ extension Plist {
             switch format {
             case .xml:
                 return try xml(bytes)
+
             case .binary:
                 return try binary(bytes)
             }
@@ -382,6 +384,7 @@ extension Plist.Error {
             // Line number is available but not byte offset
             // Return 0 as fallback
             return line > 0 ? 0 : 0
+
         default:
             return 0
         }
@@ -395,13 +398,16 @@ extension Plist.Error {
         switch self {
         case .invalidMagic:
             return 0
+
         case .invalidTrailer:
             // Trailer is at the end of the file
             return 0
+
         case .invalidObjectReference(let ref):
             // Object reference doesn't directly map to offset
             _ = ref
             return 0
+
         default:
             return 0
         }

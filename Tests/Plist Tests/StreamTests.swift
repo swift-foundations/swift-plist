@@ -2,6 +2,7 @@
 /// swift-plist
 
 import Testing
+
 @testable import Plist
 
 @Suite("Stream Tests")
@@ -12,10 +13,10 @@ struct StreamTests {
     @Test
     func `Parse ND plist stream`() async throws {
         let input = """
-        <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
-        <?xml version="1.0"?><plist version="1.0"><integer>2</integer></plist>
-        <?xml version="1.0"?><plist version="1.0"><integer>3</integer></plist>
-        """
+            <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
+            <?xml version="1.0"?><plist version="1.0"><integer>2</integer></plist>
+            <?xml version="1.0"?><plist version="1.0"><integer>3</integer></plist>
+            """
 
         let bytes = AsyncStream<UInt8> { continuation in
             for byte in input.utf8 {
@@ -38,11 +39,11 @@ struct StreamTests {
     @Test
     func `Skip empty lines in ND plist`() async throws {
         let input = """
-        <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
+            <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
 
-        <?xml version="1.0"?><plist version="1.0"><integer>2</integer></plist>
+            <?xml version="1.0"?><plist version="1.0"><integer>2</integer></plist>
 
-        """
+            """
 
         let bytes = AsyncStream<UInt8> { continuation in
             for byte in input.utf8 {
@@ -65,10 +66,10 @@ struct StreamTests {
     @Test
     func `Continue after malformed line`() async throws {
         let input = """
-        <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
-        not valid plist
-        <?xml version="1.0"?><plist version="1.0"><integer>3</integer></plist>
-        """
+            <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
+            not valid plist
+            <?xml version="1.0"?><plist version="1.0"><integer>3</integer></plist>
+            """
 
         let bytes = AsyncStream<UInt8> { continuation in
             for byte in input.utf8 {
@@ -86,6 +87,7 @@ struct StreamTests {
                 if case .integer(let value) = plist.value {
                     successes.append(Int(value))
                 }
+
             case .failure:
                 failures += 1
             }
@@ -189,8 +191,8 @@ struct StreamTests {
     @Test
     func `Parse via accessor`() async throws {
         let input = """
-        <?xml version="1.0"?><plist version="1.0"><string>Hello</string></plist>
-        """
+            <?xml version="1.0"?><plist version="1.0"><string>Hello</string></plist>
+            """
 
         let bytes = AsyncStream<UInt8> { continuation in
             for byte in input.utf8 {
@@ -207,9 +209,9 @@ struct StreamTests {
     @Test
     func `Stream via accessor`() async throws {
         let input = """
-        <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
-        <?xml version="1.0"?><plist version="1.0"><integer>2</integer></plist>
-        """
+            <?xml version="1.0"?><plist version="1.0"><integer>1</integer></plist>
+            <?xml version="1.0"?><plist version="1.0"><integer>2</integer></plist>
+            """
 
         let bytes = AsyncStream<UInt8> { continuation in
             for byte in input.utf8 {
@@ -246,8 +248,8 @@ struct StreamTests {
     @Test
     func `Deserialize from async bytes`() async throws {
         let input = """
-        <?xml version="1.0"?><plist version="1.0"><integer>42</integer></plist>
-        """
+            <?xml version="1.0"?><plist version="1.0"><integer>42</integer></plist>
+            """
 
         let bytes = AsyncStream<UInt8> { continuation in
             for byte in input.utf8 {

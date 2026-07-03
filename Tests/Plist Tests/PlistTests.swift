@@ -1,5 +1,5 @@
-import Testing
 import Plist
+import Testing
 
 @Suite("Plist Value Tests")
 struct PlistValueTests {
@@ -52,7 +52,7 @@ struct PlistValueTests {
         let plist = Plist.array([
             .string("one"),
             .integer(2),
-            .bool(true)
+            .bool(true),
         ])
 
         #expect(plist.isArray)
@@ -66,7 +66,7 @@ struct PlistValueTests {
     func `Dictionary creation and access`() {
         let plist = Plist.dictionary([
             ("name", .string("John")),
-            ("age", .integer(30))
+            ("age", .integer(30)),
         ])
 
         #expect(plist.isDictionary)
@@ -82,7 +82,7 @@ struct PlistValueTests {
 
         #expect(plist["missing"].isNull)
         #expect(plist.missing.isNull)
-        #expect(String(plist.missing) == "")
+        #expect(String(plist.missing).isEmpty)
     }
 
     @Test
@@ -131,7 +131,7 @@ struct PlistLiteralTests {
     func `Dictionary literal`() {
         let plist: Plist = [
             "name": "Alice",
-            "age": 25
+            "age": 25,
         ]
         #expect(String(plist.name) == "Alice")
         #expect(Int64(plist.age) == 25)
@@ -142,7 +142,7 @@ struct PlistLiteralTests {
         let plist: Plist = [
             "user": [
                 "name": "Bob",
-                "tags": ["swift", "plist"]
+                "tags": ["swift", "plist"],
             ]
         ]
         #expect(String(plist.user.name) == "Bob")
@@ -168,7 +168,7 @@ struct PlistFormatTests {
 
     @Test
     func `Detect binary format`() {
-        let binary: [UInt8] = [0x62, 0x70, 0x6C, 0x69, 0x73, 0x74, 0x30, 0x30] // "bplist00"
+        let binary: [UInt8] = [0x62, 0x70, 0x6C, 0x69, 0x73, 0x74, 0x30, 0x30]  // "bplist00"
         let format = Plist.Format.detect(binary)
         #expect(format == .binary)
     }

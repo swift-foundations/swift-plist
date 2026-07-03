@@ -1,16 +1,16 @@
-import Testing
 import Plist_XML
+import Testing
 
 @Suite("Plist XML Parser Tests")
 struct XMLParserTests {
     @Test
     func `Parse string element`() throws {
         let xml = """
-        <?xml version="1.0"?>
-        <plist version="1.0">
-            <string>Hello, World!</string>
-        </plist>
-        """
+            <?xml version="1.0"?>
+            <plist version="1.0">
+                <string>Hello, World!</string>
+            </plist>
+            """
 
         let plist = try Plist.XML.parse(xml)
         #expect(String(plist) == "Hello, World!")
@@ -19,11 +19,11 @@ struct XMLParserTests {
     @Test
     func `Parse integer element`() throws {
         let xml = """
-        <?xml version="1.0"?>
-        <plist version="1.0">
-            <integer>42</integer>
-        </plist>
-        """
+            <?xml version="1.0"?>
+            <plist version="1.0">
+                <integer>42</integer>
+            </plist>
+            """
 
         let plist = try Plist.XML.parse(xml)
         #expect(Int64(plist) == 42)
@@ -32,11 +32,11 @@ struct XMLParserTests {
     @Test
     func `Parse negative integer`() throws {
         let xml = """
-        <?xml version="1.0"?>
-        <plist version="1.0">
-            <integer>-100</integer>
-        </plist>
-        """
+            <?xml version="1.0"?>
+            <plist version="1.0">
+                <integer>-100</integer>
+            </plist>
+            """
 
         let plist = try Plist.XML.parse(xml)
         #expect(Int64(plist) == -100)
@@ -45,11 +45,11 @@ struct XMLParserTests {
     @Test
     func `Parse real element`() throws {
         let xml = """
-        <?xml version="1.0"?>
-        <plist version="1.0">
-            <real>3.14159</real>
-        </plist>
-        """
+            <?xml version="1.0"?>
+            <plist version="1.0">
+                <real>3.14159</real>
+            </plist>
+            """
 
         let plist = try Plist.XML.parse(xml)
         #expect(Double(plist) == 3.14159)
@@ -58,11 +58,11 @@ struct XMLParserTests {
     @Test
     func `Parse true element`() throws {
         let xml = """
-        <?xml version="1.0"?>
-        <plist version="1.0">
-            <true/>
-        </plist>
-        """
+            <?xml version="1.0"?>
+            <plist version="1.0">
+                <true/>
+            </plist>
+            """
 
         let plist = try Plist.XML.parse(xml)
         #expect(Bool(plist) == true)
@@ -71,11 +71,11 @@ struct XMLParserTests {
     @Test
     func `Parse false element`() throws {
         let xml = """
-        <?xml version="1.0"?>
-        <plist version="1.0">
-            <false/>
-        </plist>
-        """
+            <?xml version="1.0"?>
+            <plist version="1.0">
+                <false/>
+            </plist>
+            """
 
         let plist = try Plist.XML.parse(xml)
         #expect(Bool(plist) == false)
@@ -84,24 +84,24 @@ struct XMLParserTests {
     @Test
     func `Parse data element`() throws {
         let xml = """
-        <?xml version="1.0"?>
-        <plist version="1.0">
-            <data>SGVsbG8=</data>
-        </plist>
-        """
+            <?xml version="1.0"?>
+            <plist version="1.0">
+                <data>SGVsbG8=</data>
+            </plist>
+            """
 
         let plist = try Plist.XML.parse(xml)
-        #expect(plist.data == [0x48, 0x65, 0x6C, 0x6C, 0x6F]) // "Hello"
+        #expect(plist.data == [0x48, 0x65, 0x6C, 0x6C, 0x6F])  // "Hello"
     }
 
     @Test
     func `Parse date element`() throws {
         let xml = """
-        <?xml version="1.0"?>
-        <plist version="1.0">
-            <date>2024-01-15T12:30:00Z</date>
-        </plist>
-        """
+            <?xml version="1.0"?>
+            <plist version="1.0">
+                <date>2024-01-15T12:30:00Z</date>
+            </plist>
+            """
 
         let plist = try Plist.XML.parse(xml)
         #expect(plist.isDate)
@@ -112,15 +112,15 @@ struct XMLParserTests {
     @Test
     func `Parse array element`() throws {
         let xml = """
-        <?xml version="1.0"?>
-        <plist version="1.0">
-            <array>
-                <string>one</string>
-                <integer>2</integer>
-                <true/>
-            </array>
-        </plist>
-        """
+            <?xml version="1.0"?>
+            <plist version="1.0">
+                <array>
+                    <string>one</string>
+                    <integer>2</integer>
+                    <true/>
+                </array>
+            </plist>
+            """
 
         let plist = try Plist.XML.parse(xml)
         #expect(plist.isArray)
@@ -133,16 +133,16 @@ struct XMLParserTests {
     @Test
     func `Parse dictionary element`() throws {
         let xml = """
-        <?xml version="1.0"?>
-        <plist version="1.0">
-            <dict>
-                <key>name</key>
-                <string>John</string>
-                <key>age</key>
-                <integer>30</integer>
-            </dict>
-        </plist>
-        """
+            <?xml version="1.0"?>
+            <plist version="1.0">
+                <dict>
+                    <key>name</key>
+                    <string>John</string>
+                    <key>age</key>
+                    <integer>30</integer>
+                </dict>
+            </plist>
+            """
 
         let plist = try Plist.XML.parse(xml)
         #expect(plist.isDictionary)
@@ -153,22 +153,22 @@ struct XMLParserTests {
     @Test
     func `Parse nested structures`() throws {
         let xml = """
-        <?xml version="1.0"?>
-        <plist version="1.0">
-            <dict>
-                <key>user</key>
+            <?xml version="1.0"?>
+            <plist version="1.0">
                 <dict>
-                    <key>name</key>
-                    <string>Alice</string>
-                    <key>tags</key>
-                    <array>
-                        <string>swift</string>
-                        <string>plist</string>
-                    </array>
+                    <key>user</key>
+                    <dict>
+                        <key>name</key>
+                        <string>Alice</string>
+                        <key>tags</key>
+                        <array>
+                            <string>swift</string>
+                            <string>plist</string>
+                        </array>
+                    </dict>
                 </dict>
-            </dict>
-        </plist>
-        """
+            </plist>
+            """
 
         let plist = try Plist.XML.parse(xml)
         #expect(String(plist.user.name) == "Alice")
@@ -213,7 +213,7 @@ struct XMLSerializerTests {
     func `Serialize dictionary`() {
         let plist: Plist = [
             "name": "Bob",
-            "age": 25
+            "age": 25,
         ]
 
         let bytes = Plist.XML.serialize(plist)
@@ -231,7 +231,7 @@ struct XMLSerializerTests {
             "number": 42,
             "real": 3.14,
             "bool": true,
-            "array": [1, 2, 3]
+            "array": [1, 2, 3],
         ]
 
         let bytes = Plist.XML.serialize(original)

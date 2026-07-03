@@ -1,5 +1,5 @@
-import Plist_XML
 import Plist_Binary
+import Plist_XML
 
 // MARK: - Parsing
 
@@ -12,7 +12,7 @@ extension Plist {
     @inlinable
     public static func parse<Bytes>(
         _ bytes: Bytes
-    ) throws(Plist.Error) -> Plist
+    ) throws(Self.Error) -> Plist
     where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
         guard let format = Format.detect(bytes) else {
             throw .unknownFormat
@@ -21,6 +21,7 @@ extension Plist {
         switch format {
         case .xml:
             return try XML.parse(bytes)
+
         case .binary:
             return try Binary.parse(bytes)
         }
@@ -32,7 +33,7 @@ extension Plist {
     /// - Returns: The parsed plist value.
     /// - Throws: `Plist.Error` if parsing fails.
     @inlinable
-    public static func parse(xml string: String) throws(Plist.Error) -> Plist {
+    public static func parse(xml string: String) throws(Self.Error) -> Plist {
         try XML.parse(string)
     }
 
@@ -44,7 +45,7 @@ extension Plist {
     @inlinable
     public static func parse<Bytes>(
         binary bytes: Bytes
-    ) throws(Plist.Error) -> Plist
+    ) throws(Self.Error) -> Plist
     where Bytes: Swift.Collection<UInt8> {
         try Binary.parse(bytes)
     }
@@ -64,6 +65,7 @@ extension Plist {
         switch format {
         case .xml:
             return XML.serialize(self, pretty: pretty)
+
         case .binary:
             return Binary.serialize(self)
         }

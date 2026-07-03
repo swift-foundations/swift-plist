@@ -76,12 +76,12 @@ extension Plist.Binary.Writer {
 
         // Recursively collect child objects
         switch value {
-        case let .array(elements):
+        case .array(let elements):
             for element in elements {
                 _ = collectObjects(element)
             }
 
-        case let .dictionary(members):
+        case .dictionary(let members):
             for member in members {
                 _ = collectObjects(.string(member.key))
                 _ = collectObjects(member.value)
@@ -112,28 +112,28 @@ extension Plist.Binary.Writer {
         case .null:
             bytes.append(Plist.Binary.Marker.null)
 
-        case let .bool(flag):
+        case .bool(let flag):
             bytes.append(flag ? Plist.Binary.Marker.boolTrue : Plist.Binary.Marker.boolFalse)
 
-        case let .integer(number):
+        case .integer(let number):
             writeInteger(number)
 
-        case let .real(number):
+        case .real(let number):
             writeReal(number)
 
-        case let .date(seconds):
+        case .date(let seconds):
             writeDate(seconds)
 
-        case let .data(data):
+        case .data(let data):
             writeData(data)
 
-        case let .string(text):
+        case .string(let text):
             writeString(text)
 
-        case let .array(elements):
+        case .array(let elements):
             writeArray(elements)
 
-        case let .dictionary(members):
+        case .dictionary(let members):
             writeDictionary(members)
         }
     }

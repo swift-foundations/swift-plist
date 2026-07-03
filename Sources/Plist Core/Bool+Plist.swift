@@ -1,4 +1,4 @@
-/// Extensions for converting Plist values to Bool.
+// Extensions for converting Plist values to Bool.
 
 // MARK: - Bool from Plist
 

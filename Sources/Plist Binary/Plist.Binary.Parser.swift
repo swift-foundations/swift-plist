@@ -20,7 +20,6 @@ extension Plist.Binary {
 // MARK: - Parser Context
 
 extension Plist.Binary {
-    /// Internal parsing context.
     // WHY: Category D — structural Sendable workaround.
     // WHY: Generic Collection<UInt8> parameter blocks structural Sendable
     // WHY: inference. Single-threaded parser state with mutable parsedObjects.
@@ -28,6 +27,7 @@ extension Plist.Binary {
     // WHEN TO REMOVE: When compiler gains structural Sendable inference through
     // WHEN TO REMOVE: generic Collection parameters.
     // TRACKING: unsafe-audit-findings.md Category D; SP-4.
+    /// Internal parsing context.
     final class Context<Bytes: Swift.Collection<UInt8>>: @unchecked Sendable {
         let bytes: Bytes
         let trailer: Trailer
@@ -79,11 +79,11 @@ extension Plist.Binary.Context {
         index = bytes.index(after: index)
         let v1 = bytes[index]
 
-        guard v0 == 0x30 else { // '0'
+        guard v0 == 0x30 else {  // '0'
             throw .unsupportedVersion("\(v0)\(v1)")
         }
 
-        guard v1 == 0x30 || v1 == 0x31 else { // '0' or '1'
+        guard v1 == 0x30 || v1 == 0x31 else {  // '0' or '1'
             throw .unsupportedVersion("0\(Character(UnicodeScalar(v1)))")
         }
     }
@@ -250,7 +250,7 @@ extension Plist.Binary.Context {
             // Parse keys and values
             for i in 0..<count {
                 let keyValue = try parseObject(at: keyRefs[i])
-                guard case let .string(key) = keyValue else {
+                guard case .string(let key) = keyValue else {
                     throw .typeMismatch(expected: "string key", got: "non-string")
                 }
                 let entryValue = try parseObject(at: valueRefs[i])

@@ -66,35 +66,50 @@ extension Plist.Error: CustomStringConvertible {
         switch self {
         case .unknownFormat:
             return "Unknown plist format"
-        case let .unsupportedVersion(version):
+
+        case .unsupportedVersion(let version):
             return "Unsupported plist version: \(version)"
-        case let .invalidXML(message, line, column):
+
+        case .invalidXML(let message, let line, let column):
             return "Invalid XML at line \(line), column \(column): \(message)"
-        case let .unexpectedElement(expected, got):
+
+        case .unexpectedElement(let expected, let got):
             return "Expected \(expected), got \(got)"
-        case let .missingRequiredElement(name):
+
+        case .missingRequiredElement(let name):
             return "Missing required element: \(name)"
+
         case .invalidBase64Data:
             return "Invalid Base64-encoded data"
-        case let .invalidDateFormat(format):
+
+        case .invalidDateFormat(let format):
             return "Invalid date format: \(format)"
+
         case .invalidMagic:
             return "Invalid binary plist magic number"
+
         case .invalidTrailer:
             return "Invalid binary plist trailer"
-        case let .invalidObjectReference(ref):
+
+        case .invalidObjectReference(let ref):
             return "Invalid object reference: \(ref)"
-        case let .invalidObjectType(marker):
+
+        case .invalidObjectType(let marker):
             return "Invalid object type marker: 0x\(String(marker, radix: 16, uppercase: true))"
+
         case .integerOverflow:
             return "Integer overflow during parsing"
+
         case .circularReference:
             return "Circular reference detected"
+
         case .unexpectedEndOfData:
             return "Unexpected end of data"
-        case let .typeMismatch(expected, got):
+
+        case .typeMismatch(let expected, let got):
             return "Type mismatch: expected \(expected), got \(got)"
-        case let .missingKey(key):
+
+        case .missingKey(let key):
             return "Missing required key: \(key)"
         }
     }

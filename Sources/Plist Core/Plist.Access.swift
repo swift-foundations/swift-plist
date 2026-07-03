@@ -4,21 +4,21 @@ extension Plist {
     /// Returns the data value, or `nil` if not data.
     @inlinable
     public var data: [UInt8]? {
-        if case let .data(value) = raw { return value }
+        if case .data(let value) = raw { return value }
         return nil
     }
 
     /// Returns the date value as seconds since reference date, or `nil` if not a date.
     @inlinable
     public var date: Double? {
-        if case let .date(value) = raw { return value }
+        if case .date(let value) = raw { return value }
         return nil
     }
 
     /// Returns the array elements as `[Plist]`, or `nil` if not an array.
     @inlinable
     public var array: [Plist]? {
-        if case let .array(value) = raw {
+        if case .array(let value) = raw {
             return value.map { Plist($0) }
         }
         return nil
@@ -27,7 +27,7 @@ extension Plist {
     /// Returns the dictionary members as key-value pairs, or `nil` if not a dictionary.
     @inlinable
     public var dictionary: [(key: String, value: Plist)]? {
-        if case let .dictionary(value) = raw {
+        if case .dictionary(let value) = raw {
             return value.map { (key: $0.key, value: Plist($0.value)) }
         }
         return nil

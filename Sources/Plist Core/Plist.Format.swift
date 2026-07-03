@@ -30,12 +30,12 @@ extension Plist.Format {
         let b5 = iterator.next()!
 
         // Binary plist: starts with "bplist"
-        if b0 == 0x62, // 'b'
-           b1 == 0x70, // 'p'
-           b2 == 0x6C, // 'l'
-           b3 == 0x69, // 'i'
-           b4 == 0x73, // 's'
-           b5 == 0x74  // 't'
+        if b0 == 0x62,  // 'b'
+            b1 == 0x70,  // 'p'
+            b2 == 0x6C,  // 'l'
+            b3 == 0x69,  // 'i'
+            b4 == 0x73,  // 's'
+            b5 == 0x74  // 't'
         {
             return .binary
         }
@@ -62,31 +62,31 @@ extension Plist.Format {
         let r4 = remainingIterator.next()!
 
         // Check for "<?xml"
-        if r0 == 0x3C, // '<'
-           r1 == 0x3F, // '?'
-           r2 == 0x78, // 'x'
-           r3 == 0x6D, // 'm'
-           r4 == 0x6C  // 'l'
+        if r0 == 0x3C,  // '<'
+            r1 == 0x3F,  // '?'
+            r2 == 0x78,  // 'x'
+            r3 == 0x6D,  // 'm'
+            r4 == 0x6C  // 'l'
         {
             return .xml
         }
 
         // Check for "<plis" (start of "<plist")
-        if r0 == 0x3C, // '<'
-           r1 == 0x70, // 'p'
-           r2 == 0x6C, // 'l'
-           r3 == 0x69, // 'i'
-           r4 == 0x73  // 's'
+        if r0 == 0x3C,  // '<'
+            r1 == 0x70,  // 'p'
+            r2 == 0x6C,  // 'l'
+            r3 == 0x69,  // 'i'
+            r4 == 0x73  // 's'
         {
             return .xml
         }
 
         // Check for "<!DOC" (DOCTYPE declaration)
-        if r0 == 0x3C, // '<'
-           r1 == 0x21, // '!'
-           r2 == 0x44, // 'D'
-           r3 == 0x4F, // 'O'
-           r4 == 0x43  // 'C'
+        if r0 == 0x3C,  // '<'
+            r1 == 0x21,  // '!'
+            r2 == 0x44,  // 'D'
+            r3 == 0x4F,  // 'O'
+            r4 == 0x43  // 'C'
         {
             return .xml
         }

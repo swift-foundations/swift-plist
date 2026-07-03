@@ -18,7 +18,7 @@ extension Plist {
     @inlinable
     public static func parse<S: AsyncSequence & Sendable>(
         collecting bytes: S
-    ) async throws(Plist.Error) -> Plist
+    ) async throws(Self.Error) -> Plist
     where S.Element == UInt8 {
         var buffer: [UInt8] = []
         do {
@@ -126,13 +126,13 @@ extension Plist.ND {
 }
 
 extension Plist.ND {
-    /// Internal state machine for ND plist parsing.
     // WHY: Category D — structural Sendable workaround.
     // WHY: AsyncIteratorProtocol generic parameter blocks Sendable inference.
     // WHY: No caller invariant to uphold — data is structurally safe.
     // WHEN TO REMOVE: When compiler gains structural Sendable inference through
     // WHEN TO REMOVE: AsyncIteratorProtocol generic parameters.
     // TRACKING: unsafe-audit-findings.md Category D; SP-4.
+    /// Internal state machine for ND plist parsing.
     @usableFromInline
     internal final class State<I: AsyncIteratorProtocol>: @unchecked Sendable
     where I.Element == UInt8 {
@@ -173,13 +173,13 @@ extension Plist.ND {
                     return parseLine()
                 }
 
-                if byte == 0x0A { // LF - newline
-                    if buffer.isEmpty { continue } // Skip empty lines
+                if byte == 0x0A {  // LF - newline
+                    if buffer.isEmpty { continue }  // Skip empty lines
                     defer { buffer.removeAll(keepingCapacity: true) }
                     return parseLine()
                 }
 
-                if byte == 0x0D { continue } // Skip CR
+                if byte == 0x0D { continue }  // Skip CR
 
                 buffer.append(byte)
             }
@@ -189,12 +189,12 @@ extension Plist.ND {
         func parseLine() -> Result<Plist, Plist.Error> {
             // Check for binary plist magic (bplist)
             if buffer.count >= 6,
-               buffer[0] == 0x62, // 'b'
-               buffer[1] == 0x70, // 'p'
-               buffer[2] == 0x6C, // 'l'
-               buffer[3] == 0x69, // 'i'
-               buffer[4] == 0x73, // 's'
-               buffer[5] == 0x74  // 't'
+                buffer[0] == 0x62,  // 'b'
+                buffer[1] == 0x70,  // 'p'
+                buffer[2] == 0x6C,  // 'l'
+                buffer[3] == 0x69,  // 'i'
+                buffer[4] == 0x73,  // 's'
+                buffer[5] == 0x74  // 't'
             {
                 return .failure(.unknownFormat)
             }

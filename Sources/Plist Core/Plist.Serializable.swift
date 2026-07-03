@@ -34,7 +34,7 @@ extension Plist: Plist.Serializable {
     }
 
     @inlinable
-    public static func deserialize(_ plist: Plist) throws(Plist.Error) -> Plist {
+    public static func deserialize(_ plist: Plist) throws(Self.Error) -> Plist {
         plist
     }
 }
@@ -104,8 +104,10 @@ extension Double: Plist.Serializable {
         switch plist.raw {
         case .real(let value):
             return value
+
         case .integer(let value):
             return Double(value)
+
         default:
             throw .typeMismatch(expected: "real or integer", got: plist.typeName)
         }
@@ -178,7 +180,7 @@ extension Dictionary: Plist.Serializable where Key == String, Value: Plist.Seria
 extension Optional: Plist.Serializable where Wrapped: Plist.Serializable {
     @inlinable
     public static func serialize(_ value: Wrapped?) -> Plist {
-        guard let value = value else {
+        guard let value else {
             return .null
         }
         return Wrapped.serialize(value)

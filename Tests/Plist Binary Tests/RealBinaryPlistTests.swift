@@ -1,6 +1,6 @@
-import Testing
-import Plist_Binary
 import Darwin
+import Plist_Binary
+import Testing
 
 // MARK: - File Reading Helper
 
@@ -72,9 +72,7 @@ struct RealBinaryPlistTests {
         if let dict = plist.dictionary {
             let keys = dict.map { $0.key }
             // Dock plist typically has these keys
-            let hasTypicalKey = keys.contains("autohide") ||
-                               keys.contains("tilesize") ||
-                               keys.contains("persistent-apps")
+            let hasTypicalKey = keys.contains("autohide") || keys.contains("tilesize") || keys.contains("persistent-apps")
             #expect(hasTypicalKey, "Expected typical dock preference keys")
         }
     }
@@ -97,8 +95,10 @@ struct RealBinaryPlistTests {
             guard format == .binary else { continue }
 
             let plist = try Plist.Binary.parse(bytes)
-            #expect(plist.dictionary != nil || plist.array != nil,
-                   "Expected dictionary or array at root")
+            #expect(
+                plist.dictionary != nil || plist.array != nil,
+                "Expected dictionary or array at root"
+            )
             parsed = true
             break
         }
