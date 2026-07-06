@@ -27,6 +27,7 @@ extension Plist.Serializable {
 
 // MARK: - Plist Conformance
 
+// swiftlint:disable:next prefer_self_in_static_references - reason: `Self.Serializable` compiles here but does NOT establish genuine conformance to `Plist.Serializable` (verified via swiftc: a generic `<T: Plist.Serializable>` call site then fails with "requires that 'Plist' conform to 'Plist.Serializable'") — the qualified form is required.
 extension Plist: Plist.Serializable {
     @inlinable
     public static func serialize(_ value: Plist) -> Plist {
