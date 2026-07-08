@@ -48,65 +48,6 @@ extension Plist {
     public struct Parse: Sendable {
         @usableFromInline
         internal init() {}
-
-        /// Parses a plist from bytes, auto-detecting the format.
-        ///
-        /// - Parameter bytes: The plist bytes (XML or binary).
-        /// - Returns: The parsed plist value.
-        /// - Throws: `Plist.Error` if parsing fails.
-        @inlinable
-        public func callAsFunction<Bytes>(
-            _ bytes: Bytes
-        ) throws(Plist.Error) -> Plist
-        where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
-            guard let format = Format.detect(bytes) else {
-                throw .unknownFormat
-            }
-
-            switch format {
-            case .xml:
-                return try XML.parse(bytes)
-
-            case .binary:
-                return try Binary.parse(bytes)
-            }
-        }
-
-        /// Parses an XML plist from a string.
-        ///
-        /// - Parameter string: The XML plist string.
-        /// - Returns: The parsed plist value.
-        /// - Throws: `Plist.Error` if parsing fails.
-        @inlinable
-        public func xml(_ string: String) throws(Plist.Error) -> Plist {
-            try XML.parse(string)
-        }
-
-        /// Parses an XML plist from bytes.
-        ///
-        /// - Parameter bytes: The XML plist bytes.
-        /// - Returns: The parsed plist value.
-        /// - Throws: `Plist.Error` if parsing fails.
-        @inlinable
-        public func xml<Bytes>(
-            _ bytes: Bytes
-        ) throws(Plist.Error) -> Plist
-        where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
-            try XML.parse(bytes)
-        }
-
-        /// Parses a binary plist from bytes.
-        ///
-        /// - Parameter bytes: The binary plist bytes.
-        /// - Returns: The parsed plist value.
-        /// - Throws: `Plist.Error` if parsing fails.
-        @inlinable
-        public func binary<Bytes>(
-            _ bytes: Bytes
-        ) throws(Plist.Error) -> Plist
-        where Bytes: Swift.Collection<UInt8> {
-            try Binary.parse(bytes)
-        }
     }
 
     /// Accessor for parse operation variants.
@@ -130,6 +71,69 @@ extension Plist {
     /// }
     /// ```
     public static var parse: Parse { Parse() }
+}
+
+// MARK: - Parse Operations
+
+extension Plist.Parse {
+    /// Parses a plist from bytes, auto-detecting the format.
+    ///
+    /// - Parameter bytes: The plist bytes (XML or binary).
+    /// - Returns: The parsed plist value.
+    /// - Throws: `Plist.Error` if parsing fails.
+    @inlinable
+    public func callAsFunction<Bytes>(
+        _ bytes: Bytes
+    ) throws(Plist.Error) -> Plist
+    where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
+        guard let format = Plist.Format.detect(bytes) else {
+            throw .unknownFormat
+        }
+
+        switch format {
+        case .xml:
+            return try Plist.XML.parse(bytes)
+
+        case .binary:
+            return try Plist.Binary.parse(bytes)
+        }
+    }
+
+    /// Parses an XML plist from a string.
+    ///
+    /// - Parameter string: The XML plist string.
+    /// - Returns: The parsed plist value.
+    /// - Throws: `Plist.Error` if parsing fails.
+    @inlinable
+    public func xml(_ string: String) throws(Plist.Error) -> Plist {
+        try Plist.XML.parse(string)
+    }
+
+    /// Parses an XML plist from bytes.
+    ///
+    /// - Parameter bytes: The XML plist bytes.
+    /// - Returns: The parsed plist value.
+    /// - Throws: `Plist.Error` if parsing fails.
+    @inlinable
+    public func xml<Bytes>(
+        _ bytes: Bytes
+    ) throws(Plist.Error) -> Plist
+    where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
+        try Plist.XML.parse(bytes)
+    }
+
+    /// Parses a binary plist from bytes.
+    ///
+    /// - Parameter bytes: The binary plist bytes.
+    /// - Returns: The parsed plist value.
+    /// - Throws: `Plist.Error` if parsing fails.
+    @inlinable
+    public func binary<Bytes>(
+        _ bytes: Bytes
+    ) throws(Plist.Error) -> Plist
+    where Bytes: Swift.Collection<UInt8> {
+        try Plist.Binary.parse(bytes)
+    }
 }
 
 // MARK: - Prepared Parser
@@ -206,55 +210,59 @@ extension Plist {
     public struct Prepared: Sendable {
         @usableFromInline
         internal init() {}
+    }
+}
 
-        /// Parses a plist from bytes, auto-detecting the format.
-        ///
-        /// - Parameter bytes: The plist bytes (XML or binary).
-        /// - Returns: The parsed plist value.
-        /// - Throws: `Plist.Error` if parsing fails.
-        @inlinable
-        public func parse<Bytes>(
-            _ bytes: Bytes
-        ) throws(Plist.Error) -> Plist
-        where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
-            try Plist.parse(bytes)
-        }
+// MARK: - Prepared Operations
 
-        /// Parses an XML plist from a string.
-        ///
-        /// - Parameter string: The XML plist string.
-        /// - Returns: The parsed plist value.
-        /// - Throws: `Plist.Error` if parsing fails.
-        @inlinable
-        public func xml(_ string: String) throws(Plist.Error) -> Plist {
-            try Plist.parse(xml: string)
-        }
+extension Plist.Prepared {
+    /// Parses a plist from bytes, auto-detecting the format.
+    ///
+    /// - Parameter bytes: The plist bytes (XML or binary).
+    /// - Returns: The parsed plist value.
+    /// - Throws: `Plist.Error` if parsing fails.
+    @inlinable
+    public func parse<Bytes>(
+        _ bytes: Bytes
+    ) throws(Plist.Error) -> Plist
+    where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
+        try Plist.parse(bytes)
+    }
 
-        /// Parses an XML plist from bytes.
-        ///
-        /// - Parameter bytes: The XML plist bytes.
-        /// - Returns: The parsed plist value.
-        /// - Throws: `Plist.Error` if parsing fails.
-        @inlinable
-        public func xml<Bytes>(
-            _ bytes: Bytes
-        ) throws(Plist.Error) -> Plist
-        where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
-            try XML.parse(bytes)
-        }
+    /// Parses an XML plist from a string.
+    ///
+    /// - Parameter string: The XML plist string.
+    /// - Returns: The parsed plist value.
+    /// - Throws: `Plist.Error` if parsing fails.
+    @inlinable
+    public func xml(_ string: String) throws(Plist.Error) -> Plist {
+        try Plist.parse(xml: string)
+    }
 
-        /// Parses a binary plist from bytes.
-        ///
-        /// - Parameter bytes: The binary plist bytes.
-        /// - Returns: The parsed plist value.
-        /// - Throws: `Plist.Error` if parsing fails.
-        @inlinable
-        public func binary<Bytes>(
-            _ bytes: Bytes
-        ) throws(Plist.Error) -> Plist
-        where Bytes: Swift.Collection<UInt8> {
-            try Binary.parse(bytes)
-        }
+    /// Parses an XML plist from bytes.
+    ///
+    /// - Parameter bytes: The XML plist bytes.
+    /// - Returns: The parsed plist value.
+    /// - Throws: `Plist.Error` if parsing fails.
+    @inlinable
+    public func xml<Bytes>(
+        _ bytes: Bytes
+    ) throws(Plist.Error) -> Plist
+    where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
+        try Plist.XML.parse(bytes)
+    }
+
+    /// Parses a binary plist from bytes.
+    ///
+    /// - Parameter bytes: The binary plist bytes.
+    /// - Returns: The parsed plist value.
+    /// - Throws: `Plist.Error` if parsing fails.
+    @inlinable
+    public func binary<Bytes>(
+        _ bytes: Bytes
+    ) throws(Plist.Error) -> Plist
+    where Bytes: Swift.Collection<UInt8> {
+        try Plist.Binary.parse(bytes)
     }
 }
 
@@ -278,62 +286,66 @@ extension Plist {
     public struct Located: Sendable {
         @usableFromInline
         internal init() {}
+    }
+}
 
-        /// Parses a plist from bytes with located errors.
-        ///
-        /// - Parameter bytes: The plist bytes (XML or binary).
-        /// - Returns: The parsed plist value.
-        /// - Throws: `Plist.LocatedError` if parsing fails.
-        @inlinable
-        public func parse<Bytes>(
-            _ bytes: Bytes
-        ) throws(Plist.LocatedError) -> Plist
-        where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
-            guard let format = Format.detect(bytes) else {
-                throw Plist.LocatedError(.unknownFormat, at: 0)
-            }
+// MARK: - Located Operations
 
-            switch format {
-            case .xml:
-                return try xml(bytes)
-
-            case .binary:
-                return try binary(bytes)
-            }
+extension Plist.Located {
+    /// Parses a plist from bytes with located errors.
+    ///
+    /// - Parameter bytes: The plist bytes (XML or binary).
+    /// - Returns: The parsed plist value.
+    /// - Throws: `Plist.LocatedError` if parsing fails.
+    @inlinable
+    public func parse<Bytes>(
+        _ bytes: Bytes
+    ) throws(Plist.LocatedError) -> Plist
+    where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
+        guard let format = Plist.Format.detect(bytes) else {
+            throw Plist.LocatedError(.unknownFormat, at: 0)
         }
 
-        /// Parses an XML plist with located errors.
-        ///
-        /// - Parameter bytes: The XML plist bytes.
-        /// - Returns: The parsed plist value.
-        /// - Throws: `Plist.LocatedError` if parsing fails.
-        @inlinable
-        public func xml<Bytes>(
-            _ bytes: Bytes
-        ) throws(Plist.LocatedError) -> Plist
-        where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
-            do {
-                return try XML.parse(bytes)
-            } catch let error {
-                throw Plist.LocatedError(error, at: error.xmlOffset)
-            }
-        }
+        switch format {
+        case .xml:
+            return try xml(bytes)
 
-        /// Parses a binary plist with located errors.
-        ///
-        /// - Parameter bytes: The binary plist bytes.
-        /// - Returns: The parsed plist value.
-        /// - Throws: `Plist.LocatedError` if parsing fails.
-        @inlinable
-        public func binary<Bytes>(
-            _ bytes: Bytes
-        ) throws(Plist.LocatedError) -> Plist
-        where Bytes: Swift.Collection<UInt8> {
-            do {
-                return try Binary.parse(bytes)
-            } catch let error {
-                throw Plist.LocatedError(error, at: error.binaryOffset)
-            }
+        case .binary:
+            return try binary(bytes)
+        }
+    }
+
+    /// Parses an XML plist with located errors.
+    ///
+    /// - Parameter bytes: The XML plist bytes.
+    /// - Returns: The parsed plist value.
+    /// - Throws: `Plist.LocatedError` if parsing fails.
+    @inlinable
+    public func xml<Bytes>(
+        _ bytes: Bytes
+    ) throws(Plist.LocatedError) -> Plist
+    where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
+        do throws(Plist.Error) {
+            return try Plist.XML.parse(bytes)
+        } catch {
+            throw Plist.LocatedError(error, at: error.xmlOffset)
+        }
+    }
+
+    /// Parses a binary plist with located errors.
+    ///
+    /// - Parameter bytes: The binary plist bytes.
+    /// - Returns: The parsed plist value.
+    /// - Throws: `Plist.LocatedError` if parsing fails.
+    @inlinable
+    public func binary<Bytes>(
+        _ bytes: Bytes
+    ) throws(Plist.LocatedError) -> Plist
+    where Bytes: Swift.Collection<UInt8> {
+        do throws(Plist.Error) {
+            return try Plist.Binary.parse(bytes)
+        } catch {
+            throw Plist.LocatedError(error, at: error.binaryOffset)
         }
     }
 }

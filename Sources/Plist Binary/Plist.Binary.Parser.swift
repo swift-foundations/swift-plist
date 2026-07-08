@@ -46,12 +46,16 @@ extension Plist.Binary {
             // Parse offset table
             self.offsets = try Self.parseOffsetTable(bytes, trailer: trailer)
         }
+    }
+}
 
-        func parseRoot() throws(Plist.Error) -> Plist {
-            let rootIndex = trailer.topObject
-            let value = try parseObject(at: rootIndex)
-            return Plist(value)
-        }
+// MARK: - Root Parsing
+
+extension Plist.Binary.Context {
+    func parseRoot() throws(Plist.Error) -> Plist {
+        let rootIndex = trailer.topObject
+        let value = try parseObject(at: rootIndex)
+        return Plist(value)
     }
 }
 

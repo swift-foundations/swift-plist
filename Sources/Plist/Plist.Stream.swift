@@ -149,62 +149,66 @@ extension Plist.ND {
         init(_ iterator: I) {
             self.iterator = iterator
         }
+    }
+}
 
-        @usableFromInline
-        func next() async -> Result<Plist, Plist.Error>? {
-            if done { return nil }
+// MARK: - State Machine Operations
 
-            while true {
-                let byte: UInt8?
-                do {
-                    byte = try await iterator.next()
-                } catch {
-                    done = true
-                    if buffer.isEmpty { return nil }
-                    defer { buffer.removeAll() }
-                    return parseLine()
-                }
+extension Plist.ND.State {
+    @usableFromInline
+    func next() async -> Result<Plist, Plist.Error>? {
+        if done { return nil }
 
-                guard let byte else {
-                    // End of input
-                    done = true
-                    if buffer.isEmpty { return nil }
-                    defer { buffer.removeAll() }
-                    return parseLine()
-                }
-
-                if byte == 0x0A {  // LF - newline
-                    if buffer.isEmpty { continue }  // Skip empty lines
-                    defer { buffer.removeAll(keepingCapacity: true) }
-                    return parseLine()
-                }
-
-                if byte == 0x0D { continue }  // Skip CR
-
-                buffer.append(byte)
+        while true {
+            let byte: UInt8?
+            do {
+                byte = try await iterator.next()
+            } catch {
+                done = true
+                if buffer.isEmpty { return nil }
+                defer { buffer.removeAll() }
+                return parseLine()
             }
+
+            guard let byte else {
+                // End of input
+                done = true
+                if buffer.isEmpty { return nil }
+                defer { buffer.removeAll() }
+                return parseLine()
+            }
+
+            if byte == 0x0A {  // LF - newline
+                if buffer.isEmpty { continue }  // Skip empty lines
+                defer { buffer.removeAll(keepingCapacity: true) }
+                return parseLine()
+            }
+
+            if byte == 0x0D { continue }  // Skip CR
+
+            buffer.append(byte)
+        }
+    }
+
+    @usableFromInline
+    func parseLine() -> Result<Plist, Plist.Error> {
+        // Check for binary plist magic (bplist)
+        if buffer.count >= 6,
+            buffer[0] == 0x62,  // 'b'
+            buffer[1] == 0x70,  // 'p'
+            buffer[2] == 0x6C,  // 'l'
+            buffer[3] == 0x69,  // 'i'
+            buffer[4] == 0x73,  // 's'
+            buffer[5] == 0x74  // 't'
+        {
+            return .failure(.unknownFormat)
         }
 
-        @usableFromInline
-        func parseLine() -> Result<Plist, Plist.Error> {
-            // Check for binary plist magic (bplist)
-            if buffer.count >= 6,
-                buffer[0] == 0x62,  // 'b'
-                buffer[1] == 0x70,  // 'p'
-                buffer[2] == 0x6C,  // 'l'
-                buffer[3] == 0x69,  // 'i'
-                buffer[4] == 0x73,  // 's'
-                buffer[5] == 0x74  // 't'
-            {
-                return .failure(.unknownFormat)
-            }
-
-            do {
-                let plist = try Plist.parse.xml(buffer)
-                return .success(plist)
-            } catch {
-                return .failure(error)
-            }
+        do throws(Plist.Error) {
+            let plist = try Plist.parse.xml(buffer)
+            return .success(plist)
+        } catch {
+            return .failure(error)
         }
     }
 }

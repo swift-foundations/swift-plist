@@ -46,12 +46,6 @@
 /// ```
 @dynamicMemberLookup
 public struct Plist: Sendable, Hashable {
-    /// The plist value type.
-    ///
-    /// Represents any valid plist value: string, integer, real,
-    /// boolean, data, date, array, or dictionary.
-    public typealias Value = _Raw
-
     @usableFromInline
     internal var raw: _Raw
 
@@ -59,6 +53,16 @@ public struct Plist: Sendable, Hashable {
     public init(_ raw: _Raw) {
         self.raw = raw
     }
+}
+
+// MARK: - Value
+
+extension Plist {
+    /// The plist value type.
+    ///
+    /// Represents any valid plist value: string, integer, real,
+    /// boolean, data, date, array, or dictionary.
+    public typealias Value = _Raw
 
     /// The underlying plist value.
     @inlinable

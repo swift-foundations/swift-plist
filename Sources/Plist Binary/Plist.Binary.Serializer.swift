@@ -23,41 +23,49 @@ extension Plist.Binary {
         var objects: [ObjectRef] = []
         var objectOffsets: [Int] = []
         var uniqueObjects: [Plist.Value: Int] = [:]
+    }
+}
 
-        struct ObjectRef {
-            let value: Plist.Value
-            var offset: Int = 0
+// MARK: - Object Reference
+
+extension Plist.Binary.Writer {
+    struct ObjectRef {
+        let value: Plist.Value
+        var offset: Int = 0
+    }
+}
+
+// MARK: - Write Entry Point
+
+extension Plist.Binary.Writer {
+    func write(_ plist: Plist) {
+        // Collect all objects (flatten and deduplicate)
+        let rootIndex = collectObjects(plist.value)
+
+        // Write header
+        writeHeader()
+
+        // Write objects and record offsets
+        for i in 0..<objects.count {
+            objectOffsets.append(bytes.count)
+            writeObject(objects[i].value)
         }
 
-        func write(_ plist: Plist) {
-            // Collect all objects (flatten and deduplicate)
-            let rootIndex = collectObjects(plist.value)
-
-            // Write header
-            writeHeader()
-
-            // Write objects and record offsets
-            for i in 0..<objects.count {
-                objectOffsets.append(bytes.count)
-                writeObject(objects[i].value)
-            }
-
-            // Write offset table
-            let offsetTableOffset = bytes.count
-            let offsetSize = bytesNeeded(for: UInt64(bytes.count))
-            for offset in objectOffsets {
-                writeBigEndian(UInt64(offset), size: offsetSize)
-            }
-
-            // Write trailer
-            writeTrailer(
-                offsetSize: offsetSize,
-                objectRefSize: bytesNeeded(for: UInt64(objects.count)),
-                numObjects: UInt64(objects.count),
-                topObject: UInt64(rootIndex),
-                offsetTableOffset: UInt64(offsetTableOffset)
-            )
+        // Write offset table
+        let offsetTableOffset = bytes.count
+        let offsetSize = bytesNeeded(for: UInt64(bytes.count))
+        for offset in objectOffsets {
+            writeBigEndian(UInt64(offset), size: offsetSize)
         }
+
+        // Write trailer
+        writeTrailer(
+            offsetSize: offsetSize,
+            objectRefSize: bytesNeeded(for: UInt64(objects.count)),
+            numObjects: UInt64(objects.count),
+            topObject: UInt64(rootIndex),
+            offsetTableOffset: UInt64(offsetTableOffset)
+        )
     }
 }
 

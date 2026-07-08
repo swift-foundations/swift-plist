@@ -177,7 +177,7 @@ extension Plist.XML {
     private static func parseDate(_ text: String) throws(Plist.Error) -> Plist {
         // ISO 8601 format: 2024-01-15T12:30:00Z
         let dateTime: ISO_8601.DateTime
-        do {
+        do throws(ISO_8601.DateTime.Parser.Error) {
             dateTime = try ISO_8601.DateTime(text)
         } catch {
             throw .invalidDateFormat(text)

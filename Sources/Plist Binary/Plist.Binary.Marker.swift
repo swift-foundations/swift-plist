@@ -5,69 +5,73 @@ extension Plist.Binary {
     ///
     /// The high nibble of the marker byte indicates the type,
     /// and the low nibble often indicates size or is part of the type code.
-    enum Marker {
-        // MARK: - Simple Types (0x0n)
+    enum Marker {}
+}
 
-        /// Null marker (0x00) - rarely used in practice.
-        static let null: UInt8 = 0x00
+// MARK: - Marker Constants
 
-        /// Boolean false (0x08).
-        static let boolFalse: UInt8 = 0x08
+extension Plist.Binary.Marker {
+    // MARK: - Simple Types (0x0n)
 
-        /// Boolean true (0x09).
-        static let boolTrue: UInt8 = 0x09
+    /// Null marker (0x00) - rarely used in practice.
+    static let null: UInt8 = 0x00
 
-        /// Fill byte (0x0F) - padding.
-        static let fill: UInt8 = 0x0F
+    /// Boolean false (0x08).
+    static let boolFalse: UInt8 = 0x08
 
-        // MARK: - Integers (0x1n)
+    /// Boolean true (0x09).
+    static let boolTrue: UInt8 = 0x09
 
-        /// Integer type marker (high nibble).
-        static let integerType: UInt8 = 0x10
+    /// Fill byte (0x0F) - padding.
+    static let fill: UInt8 = 0x0F
 
-        // MARK: - Reals (0x2n)
+    // MARK: - Integers (0x1n)
 
-        /// 4-byte float (0x22).
-        static let real4: UInt8 = 0x22
+    /// Integer type marker (high nibble).
+    static let integerType: UInt8 = 0x10
 
-        /// 8-byte double (0x23).
-        static let real8: UInt8 = 0x23
+    // MARK: - Reals (0x2n)
 
-        // MARK: - Date (0x33)
+    /// 4-byte float (0x22).
+    static let real4: UInt8 = 0x22
 
-        /// 8-byte double date (0x33).
-        static let date: UInt8 = 0x33
+    /// 8-byte double (0x23).
+    static let real8: UInt8 = 0x23
 
-        // MARK: - Data (0x4n)
+    // MARK: - Date (0x33)
 
-        /// Data type marker (high nibble).
-        static let dataType: UInt8 = 0x40
+    /// 8-byte double date (0x33).
+    static let date: UInt8 = 0x33
 
-        // MARK: - ASCII String (0x5n)
+    // MARK: - Data (0x4n)
 
-        /// ASCII string type marker (high nibble).
-        static let asciiType: UInt8 = 0x50
+    /// Data type marker (high nibble).
+    static let dataType: UInt8 = 0x40
 
-        // MARK: - Unicode String (0x6n)
+    // MARK: - ASCII String (0x5n)
 
-        /// Unicode string type marker (high nibble).
-        static let unicodeType: UInt8 = 0x60
+    /// ASCII string type marker (high nibble).
+    static let asciiType: UInt8 = 0x50
 
-        // MARK: - Array (0xAn)
+    // MARK: - Unicode String (0x6n)
 
-        /// Array type marker (high nibble).
-        static let arrayType: UInt8 = 0xA0
+    /// Unicode string type marker (high nibble).
+    static let unicodeType: UInt8 = 0x60
 
-        // MARK: - Dictionary (0xDn)
+    // MARK: - Array (0xAn)
 
-        /// Dictionary type marker (high nibble).
-        static let dictType: UInt8 = 0xD0
+    /// Array type marker (high nibble).
+    static let arrayType: UInt8 = 0xA0
 
-        // MARK: - Extended Length Indicator
+    // MARK: - Dictionary (0xDn)
 
-        /// Indicates extended length follows (low nibble = 0xF).
-        static let extendedLength: UInt8 = 0x0F
-    }
+    /// Dictionary type marker (high nibble).
+    static let dictType: UInt8 = 0xD0
+
+    // MARK: - Extended Length Indicator
+
+    /// Indicates extended length follows (low nibble = 0xF).
+    static let extendedLength: UInt8 = 0x0F
 }
 
 // MARK: - Marker Helpers
@@ -75,19 +79,19 @@ extension Plist.Binary {
 extension Plist.Binary.Marker {
     /// Extracts the high nibble (type indicator) from a marker byte.
     @inlinable
-    static func highNibble(_ byte: UInt8) -> UInt8 {
+    package static func highNibble(_ byte: UInt8) -> UInt8 {
         byte & 0xF0
     }
 
     /// Extracts the low nibble (size/info) from a marker byte.
     @inlinable
-    static func lowNibble(_ byte: UInt8) -> UInt8 {
+    package static func lowNibble(_ byte: UInt8) -> UInt8 {
         byte & 0x0F
     }
 
     /// Returns true if the low nibble indicates extended length.
     @inlinable
-    static func hasExtendedLength(_ byte: UInt8) -> Bool {
+    package static func hasExtendedLength(_ byte: UInt8) -> Bool {
         lowNibble(byte) == extendedLength
     }
 }
