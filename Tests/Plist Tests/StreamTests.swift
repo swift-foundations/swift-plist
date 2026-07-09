@@ -241,7 +241,7 @@ struct StreamTests {
             continuation.finish()
         }
 
-        do {
+        do throws(Plist.Error) {
             _ = try await Plist.parse(collecting: bytes)
             Issue.record("Expected error for empty input")
         } catch {

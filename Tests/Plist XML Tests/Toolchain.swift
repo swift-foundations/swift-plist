@@ -36,7 +36,9 @@
 /// Catalog: `swift-institute/Research/swift-compiler-bug-catalog.md` §A9 and its
 /// `Parser.Machine.Parser<Byte.Input, …>.parse` new-site addendum (2026-06-27).
 /// Issues: `swift-institute/Issues/swift-issue-tagged-noncopyable-atomic-metadata-crash`.
-enum Toolchain {
+enum Toolchain {}
+
+extension Toolchain {
     /// `true` on Swift compilers older than 6.4, where the §A9 `Tagged` metadata
     /// SIGSEGV fires. Used as the predicate for the `.disabled(if:)` trait on the
     /// `parse`-exercising suites. `.disabled(if:)` (not `withKnownIssue`) is
