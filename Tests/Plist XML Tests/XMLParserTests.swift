@@ -1,6 +1,7 @@
 import Plist_XML
 import Testing
 
+extension Plist.XML {
 @Suite(
     "Plist XML Parser Tests",
     .disabled(
@@ -8,7 +9,7 @@ import Testing
         "§A9 Tagged-metadata SIGSEGV on Swift 6.3.x (Plist.XML.parse → XML.parse → W3C_XML.parse → Parser.Machine.Parser over Byte.Input forces Tagged VWT); fixed on 6.4+"
     )
 )
-struct XMLParserTests {
+struct Parser {
     @Test
     func `Parse string element`() throws {
         let xml = """
@@ -182,7 +183,9 @@ struct XMLParserTests {
         #expect(String(plist.user.tags[1]) == "plist")
     }
 }
+}
 
+extension Plist.XML {
 @Suite(
     "Plist XML Serializer Tests",
     .disabled(
@@ -190,7 +193,7 @@ struct XMLParserTests {
         "§A9 Tagged-metadata SIGSEGV on Swift 6.3.x (round-trip tests call Plist.XML.parse → XML.parse → W3C_XML.parse → Parser.Machine.Parser over Byte.Input forces Tagged VWT); fixed on 6.4+"
     )
 )
-struct XMLSerializerTests {
+struct Serializer {
     @Test
     func `Serialize string`() {
         let plist = Plist.string("Hello")
@@ -253,4 +256,5 @@ struct XMLSerializerTests {
         #expect(Int64(parsed["number"]) == 42)
         #expect(Bool(parsed["bool"]) == true)
     }
+}
 }

@@ -1,8 +1,9 @@
 import Plist_Binary
 import Testing
 
+extension Plist.Binary {
 @Suite("Plist Binary Parser Tests")
-struct BinaryParserTests {
+struct Parser {
     @Test
     func `Parse simple binary plist with string`() throws {
         // A minimal binary plist containing the string "hello"
@@ -40,9 +41,11 @@ struct BinaryParserTests {
         }
     }
 }
+}
 
+extension Plist.Binary {
 @Suite("Plist Binary Serializer Tests")
-struct BinarySerializerTests {
+struct Serializer {
     @Test
     func `Serialize and parse string`() throws {
         let original = Plist.string("Hello, Binary!")
@@ -178,4 +181,5 @@ struct BinarySerializerTests {
 
         #expect(String(parsed) == "Hello, 世界! 🌍")
     }
+}
 }

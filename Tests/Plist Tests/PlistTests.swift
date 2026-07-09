@@ -1,8 +1,9 @@
 import Plist
 import Testing
 
+extension Plist.Value {
 @Suite("Plist Value Tests")
-struct PlistValueTests {
+struct Test {
     @Test
     func `String creation and access`() {
         let plist = Plist.string("hello")
@@ -93,9 +94,11 @@ struct PlistValueTests {
         #expect(plist[-1].isNull)
     }
 }
+}
 
+extension Plist {
 @Suite("Plist Literal Tests")
-struct PlistLiteralTests {
+struct Test {
     @Test
     func `Boolean literal`() {
         let plist: Plist = true
@@ -149,9 +152,11 @@ struct PlistLiteralTests {
         #expect(String(plist.user.tags[0]) == "swift")
     }
 }
+}
 
+extension Plist.Format {
 @Suite("Plist Format Detection Tests")
-struct PlistFormatTests {
+struct Test {
     @Test
     func `Detect XML format with declaration`() {
         let xml = "<?xml version=\"1.0\"?><plist></plist>"
@@ -179,4 +184,5 @@ struct PlistFormatTests {
         let format = Plist.Format.detect(unknown)
         #expect(format == nil)
     }
+}
 }
