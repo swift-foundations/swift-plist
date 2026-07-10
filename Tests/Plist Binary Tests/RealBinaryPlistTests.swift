@@ -43,8 +43,9 @@
 
     // MARK: - Tests
 
-    @Suite("Real Binary Plist Tests")
-    struct RealBinaryPlistTests {
+    extension Plist.Binary {
+        @Suite("Real Binary Plist Tests")
+        struct Test {
         @Test
         func `Parse com.apple.finder.plist`() throws {
             guard let path = preferencesPath("com.apple.finder.plist"),
@@ -112,6 +113,7 @@
                 )
                 break
             }
+        }
         }
     }
 #endif  // canImport(Darwin)
