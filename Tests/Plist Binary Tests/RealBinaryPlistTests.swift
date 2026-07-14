@@ -46,74 +46,74 @@
     extension Plist.Binary {
         @Suite("Real Binary Plist Tests")
         struct Test {
-        @Test
-        func `Parse com.apple.finder.plist`() throws {
-            guard let path = preferencesPath("com.apple.finder.plist"),
-                let bytes = readFile(path)
-            else { return }
+            @Test
+            func `Parse com.apple.finder.plist`() throws {
+                guard let path = preferencesPath("com.apple.finder.plist"),
+                    let bytes = readFile(path)
+                else { return }
 
-            // Verify it's a binary plist
-            let format = Plist.Format.detect(bytes)
-            #expect(format == .binary, "Expected binary plist format")
+                // Verify it's a binary plist
+                let format = Plist.Format.detect(bytes)
+                #expect(format == .binary, "Expected binary plist format")
 
-            // Parse it
-            let plist = try Plist.Binary.parse(bytes)
+                // Parse it
+                let plist = try Plist.Binary.parse(bytes)
 
-            // Finder prefs are always a dictionary
-            #expect(plist.dictionary != nil, "Expected dictionary at root")
+                // Finder prefs are always a dictionary
+                #expect(plist.dictionary != nil, "Expected dictionary at root")
 
-            // Should have many keys
-            if let dict = plist.dictionary {
-                #expect(dict.count > 10, "Expected many keys in Finder preferences")
+                // Should have many keys
+                if let dict = plist.dictionary {
+                    #expect(dict.count > 10, "Expected many keys in Finder preferences")
+                }
             }
-        }
 
-        @Test
-        func `Parse com.apple.dock.plist`() throws {
-            guard let path = preferencesPath("com.apple.dock.plist"),
-                let bytes = readFile(path)
-            else { return }
-
-            let format = Plist.Format.detect(bytes)
-            #expect(format == .binary, "Expected binary plist format")
-
-            let plist = try Plist.Binary.parse(bytes)
-
-            #expect(plist.dictionary != nil, "Expected dictionary at root")
-
-            // Check for known dock keys
-            if let dict = plist.dictionary {
-                let keys = dict.map { $0.key }
-                // Dock plist typically has these keys
-                let hasTypicalKey = keys.contains("autohide") || keys.contains("tilesize") || keys.contains("persistent-apps")
-                #expect(hasTypicalKey, "Expected typical dock preference keys")
-            }
-        }
-
-        @Test
-        func `Parse any available binary plist`() throws {
-            // Try several common binary plist locations; absence of all of
-            // them (CI runners, fresh installs) is a quiet skip, not a failure.
-            let candidates = [
-                preferencesPath("com.apple.finder.plist"),
-                preferencesPath("com.apple.dock.plist"),
-                "/Library/Preferences/com.apple.loginwindow.plist",
-            ].compactMap { $0 }
-
-            for path in candidates {
-                guard let bytes = readFile(path) else { continue }
+            @Test
+            func `Parse com.apple.dock.plist`() throws {
+                guard let path = preferencesPath("com.apple.dock.plist"),
+                    let bytes = readFile(path)
+                else { return }
 
                 let format = Plist.Format.detect(bytes)
-                guard format == .binary else { continue }
+                #expect(format == .binary, "Expected binary plist format")
 
                 let plist = try Plist.Binary.parse(bytes)
-                #expect(
-                    plist.dictionary != nil || plist.array != nil,
-                    "Expected dictionary or array at root"
-                )
-                break
+
+                #expect(plist.dictionary != nil, "Expected dictionary at root")
+
+                // Check for known dock keys
+                if let dict = plist.dictionary {
+                    let keys = dict.map { $0.key }
+                    // Dock plist typically has these keys
+                    let hasTypicalKey = keys.contains("autohide") || keys.contains("tilesize") || keys.contains("persistent-apps")
+                    #expect(hasTypicalKey, "Expected typical dock preference keys")
+                }
             }
-        }
+
+            @Test
+            func `Parse any available binary plist`() throws {
+                // Try several common binary plist locations; absence of all of
+                // them (CI runners, fresh installs) is a quiet skip, not a failure.
+                let candidates = [
+                    preferencesPath("com.apple.finder.plist"),
+                    preferencesPath("com.apple.dock.plist"),
+                    "/Library/Preferences/com.apple.loginwindow.plist",
+                ].compactMap { $0 }
+
+                for path in candidates {
+                    guard let bytes = readFile(path) else { continue }
+
+                    let format = Plist.Format.detect(bytes)
+                    guard format == .binary else { continue }
+
+                    let plist = try Plist.Binary.parse(bytes)
+                    #expect(
+                        plist.dictionary != nil || plist.array != nil,
+                        "Expected dictionary or array at root"
+                    )
+                    break
+                }
+            }
         }
     }
 #endif  // canImport(Darwin)
