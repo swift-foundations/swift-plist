@@ -6,13 +6,13 @@ import Testing
 @testable import Plist
 
 @Suite(
-    "Stream Tests",
+
     .disabled(
         if: Toolchain.hasTaggedMetadataSIGSEGV,
         "§A9 Tagged-metadata SIGSEGV on Swift 6.3.x (Plist.parse(collecting:) / Plist.parse.stream(nd:) route XML input through Plist.XML.parse → XML.parse → Parser.Machine.Parser over Byte.Input forces Tagged VWT); fixed on 6.4+"
     )
 )
-struct StreamTests {
+struct Test {
 
     // MARK: - ND Plist Streaming
 

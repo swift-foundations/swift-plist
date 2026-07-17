@@ -2,7 +2,7 @@ import Plist
 import Testing
 
 extension Plist.Value {
-    @Suite("Plist Value Tests")
+    @Suite
     struct Test {
         @Test
         func `String creation and access`() {
@@ -97,7 +97,7 @@ extension Plist.Value {
 }
 
 extension Plist {
-    @Suite("Plist Literal Tests")
+    @Suite
     struct Test {
         @Test
         func `Boolean literal`() {
@@ -155,7 +155,7 @@ extension Plist {
 }
 
 extension Plist.Format {
-    @Suite("Plist Format Detection Tests")
+    @Suite
     struct Test {
         @Test
         func `Detect XML format with declaration`() {

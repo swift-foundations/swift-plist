@@ -2,8 +2,8 @@ import Plist_Binary
 import Testing
 
 extension Plist.Binary {
-    @Suite("Plist Binary Parser Tests")
-    struct Parser {
+    @Suite
+    struct `Plist Binary Parser Tests` {
         @Test
         func `Parse simple binary plist with string`() throws {
             // A minimal binary plist containing the string "hello"
@@ -44,8 +44,8 @@ extension Plist.Binary {
 }
 
 extension Plist.Binary {
-    @Suite("Plist Binary Serializer Tests")
-    struct Serializer {
+    @Suite
+    struct `Plist Binary Serializer Tests` {
         @Test
         func `Serialize and parse string`() throws {
             let original = Plist.string("Hello, Binary!")

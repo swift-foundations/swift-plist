@@ -44,7 +44,7 @@
     // MARK: - Tests
 
     extension Plist.Binary {
-        @Suite("Real Binary Plist Tests")
+        @Suite
         struct Test {
             @Test
             func `Parse com.apple.finder.plist`() throws {
