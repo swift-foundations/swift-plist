@@ -34,6 +34,11 @@ extension Plist.Binary {
         let offsets: [UInt64]
         var parsedObjects: [UInt64: Plist.Value] = [:]
 
+        /// Object indices currently being parsed, tracking the recursion
+        /// stack so a self-referencing object throws `.circularReference`
+        /// instead of silently caching as `.null`.
+        var objectsInProgress: Set<UInt64> = []
+
         init(_ bytes: Bytes) throws(Plist.Error) {
             self.bytes = bytes
 
@@ -139,10 +144,17 @@ extension Plist.Binary.Context {
 
 extension Plist.Binary.Context {
     func parseObject(at objectIndex: UInt64) throws(Plist.Error) -> Plist.Value {
-        // Check for circular references
+        // Return the cached result for an already-completed object.
         if let cached = parsedObjects[objectIndex] {
             return cached
         }
+
+        // Detect cycles: an object reference that points back at an object
+        // still being parsed higher up the call stack.
+        guard objectsInProgress.insert(objectIndex).inserted else {
+            throw .circularReference
+        }
+        defer { objectsInProgress.remove(objectIndex) }
 
         guard objectIndex < offsets.count else {
             throw .invalidObjectReference(objectIndex)
@@ -227,9 +239,6 @@ extension Plist.Binary.Context {
 
         // Array (0xAn)
         case 0xA0...0xAF:
-            // Mark as being parsed to detect circular references
-            parsedObjects[objectIndex] = .null
-
             let count = try readLength(marker: marker, at: &index)
             var elements: [Plist.Value] = []
             elements.reserveCapacity(count)
@@ -244,9 +253,6 @@ extension Plist.Binary.Context {
 
         // Dictionary (0xDn)
         case 0xD0...0xDF:
-            // Mark as being parsed to detect circular references
-            parsedObjects[objectIndex] = .null
-
             let count = try readLength(marker: marker, at: &index)
             var members: [(key: String, value: Plist.Value)] = []
             members.reserveCapacity(count)
@@ -327,24 +333,14 @@ extension Plist.Binary.Context {
             let high = try Self.readUnsignedInt(bytes, at: &index, size: 8)
             let low = try Self.readUnsignedInt(bytes, at: &index, size: 8)
 
-            // Check if it fits in Int64:
-            // - If high is 0, it's a positive number that fits in UInt64
-            // - If high is all 1s (0xFFFFFFFFFFFFFFFF), it's a negative number (sign extension)
-            if high == 0 {
-                // Positive number, check if low fits in Int64
-                if low <= UInt64(Int64.max) {
-                    return Int64(low)
-                }
-                // Treat as unsigned, return as signed (may wrap)
-                return Int64(bitPattern: low)
-            } else if high == UInt64.max {
-                // Negative number with sign extension
-                return Int64(bitPattern: low)
-            } else {
-                // True 128-bit value that doesn't fit - return low bytes
-                // This loses precision but prevents crashing
-                return Int64(bitPattern: low)
+            // The 128-bit two's complement value fits in Int64 only if the
+            // high word is exactly the sign extension of the low word.
+            let signExtension: UInt64 = (low & 0x8000_0000_0000_0000) != 0 ? .max : 0
+            guard high == signExtension else {
+                throw .integerOverflow
             }
+
+            return Int64(bitPattern: low)
         }
 
         guard size <= 8 else {
