@@ -5,7 +5,25 @@
     @TitleHeading("Swift Foundations")
 }
 
-Plist — umbrella catalog placeholder. Replace this line with a one-sentence
-description of what the package provides.
+Property list parsing and serialization for Swift — auto-detected XML and
+binary formats, typed errors, and null-safe dynamic-member navigation.
 
 ## Topics
+
+### Essentials
+
+- ``Plist``
+- ``Plist/Value``
+- ``Plist/Format``
+
+### Errors
+
+- ``Plist/Error``
+
+### Serialization
+
+- ``Plist/Serializable``
+
+### Streaming
+
+- ``Plist/ND``
