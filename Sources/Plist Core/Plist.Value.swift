@@ -1,45 +1,48 @@
-/// The underlying plist value representation.
-///
-/// Use `Plist.Value` instead of this type directly.
-public enum _Raw: Sendable, Hashable {
-    /// A string value (`<string>` in XML).
-    case string(String)
-
-    /// A 64-bit signed integer (`<integer>` in XML).
-    case integer(Int64)
-
-    /// A 64-bit floating-point number (`<real>` in XML).
-    case real(Double)
-
-    /// A boolean value (`<true/>` or `<false/>` in XML).
-    case bool(Bool)
-
-    /// Raw binary data (`<data>` base64-encoded in XML).
-    case data([UInt8])
-
-    /// A date value (`<date>` ISO 8601 format in XML).
+extension Plist {
+    /// The underlying plist value representation.
     ///
-    /// Stored as seconds since the Apple reference date (2001-01-01 00:00:00 UTC).
-    case date(Double)
+    /// Represents any valid plist value: string, integer, real,
+    /// boolean, data, date, array, or dictionary.
+    public enum Value: Sendable, Hashable {
+        /// A string value (`<string>` in XML).
+        case string(String)
 
-    /// An ordered array (`<array>` in XML).
-    case array([Self])
+        /// A 64-bit signed integer (`<integer>` in XML).
+        case integer(Int64)
 
-    /// A key-value dictionary (`<dict>` in XML).
-    ///
-    /// Keys are always strings. Order is preserved.
-    case dictionary([(key: String, value: Self)])
+        /// A 64-bit floating-point number (`<real>` in XML).
+        case real(Double)
 
-    /// A null placeholder for missing or invalid values.
-    ///
-    /// This is not a valid plist type but is used internally for safe chaining.
-    case null
+        /// A boolean value (`<true/>` or `<false/>` in XML).
+        case bool(Bool)
+
+        /// Raw binary data (`<data>` base64-encoded in XML).
+        case data([UInt8])
+
+        /// A date value (`<date>` ISO 8601 format in XML).
+        ///
+        /// Stored as seconds since the Apple reference date (2001-01-01 00:00:00 UTC).
+        case date(Double)
+
+        /// An ordered array (`<array>` in XML).
+        case array([Self])
+
+        /// A key-value dictionary (`<dict>` in XML).
+        ///
+        /// Keys are always strings. Order is preserved.
+        case dictionary([(key: String, value: Self)])
+
+        /// A null placeholder for missing or invalid values.
+        ///
+        /// This is not a valid plist type but is used internally for safe chaining.
+        case null
+    }
 }
 
 // MARK: - Hashable Conformance for Dictionary
 
-extension _Raw {
-    public static func == (lhs: _Raw, rhs: _Raw) -> Bool {
+extension Plist.Value {
+    public static func == (lhs: Plist.Value, rhs: Plist.Value) -> Bool {
         switch (lhs, rhs) {
         case (.string(let l), .string(let r)):
             return l == r
@@ -125,53 +128,53 @@ extension _Raw {
     }
 }
 
-// MARK: - Literal Conformances on _Raw
+// MARK: - Literal Conformances on Plist.Value
 
-extension _Raw: ExpressibleByNilLiteral {
+extension Plist.Value: ExpressibleByNilLiteral {
     @inlinable
     public init(nilLiteral: ()) {
         self = .null
     }
 }
 
-extension _Raw: ExpressibleByBooleanLiteral {
+extension Plist.Value: ExpressibleByBooleanLiteral {
     @inlinable
     public init(booleanLiteral value: Bool) {
         self = .bool(value)
     }
 }
 
-extension _Raw: ExpressibleByIntegerLiteral {
+extension Plist.Value: ExpressibleByIntegerLiteral {
     @inlinable
     public init(integerLiteral value: Int) {
         self = .integer(Int64(value))
     }
 }
 
-extension _Raw: ExpressibleByFloatLiteral {
+extension Plist.Value: ExpressibleByFloatLiteral {
     @inlinable
     public init(floatLiteral value: Double) {
         self = .real(value)
     }
 }
 
-extension _Raw: ExpressibleByStringLiteral {
+extension Plist.Value: ExpressibleByStringLiteral {
     @inlinable
     public init(stringLiteral value: String) {
         self = .string(value)
     }
 }
 
-extension _Raw: ExpressibleByArrayLiteral {
+extension Plist.Value: ExpressibleByArrayLiteral {
     @inlinable
-    public init(arrayLiteral elements: _Raw...) {
+    public init(arrayLiteral elements: Plist.Value...) {
         self = .array(elements)
     }
 }
 
-extension _Raw: ExpressibleByDictionaryLiteral {
+extension Plist.Value: ExpressibleByDictionaryLiteral {
     @inlinable
-    public init(dictionaryLiteral elements: (String, _Raw)...) {
+    public init(dictionaryLiteral elements: (String, Plist.Value)...) {
         self = .dictionary(elements.map { ($0.0, $0.1) })
     }
 }

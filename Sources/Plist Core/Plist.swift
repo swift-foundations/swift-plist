@@ -31,8 +31,7 @@
 /// Extract values via initializers:
 ///
 /// ```swift
-/// String(plist.name)        // "John" (empty if not a string)
-/// String?(plist.name)       // Optional("John")
+/// String(plist.name)        // Optional("John")
 /// Int(plist.age)            // Optional(30)
 /// Bool(plist.active)        // Optional(true)
 ///
@@ -47,10 +46,10 @@
 @dynamicMemberLookup
 public struct Plist: Sendable, Hashable {
     @usableFromInline
-    internal var raw: _Raw
+    internal var raw: Value
 
     @inlinable
-    public init(_ raw: _Raw) {
+    public init(_ raw: Value) {
         self.raw = raw
     }
 }
@@ -58,12 +57,6 @@ public struct Plist: Sendable, Hashable {
 // MARK: - Value
 
 extension Plist {
-    /// The plist value type.
-    ///
-    /// Represents any valid plist value: string, integer, real,
-    /// boolean, data, date, array, or dictionary.
-    public typealias Value = _Raw
-
     /// The underlying plist value.
     @inlinable
     public var value: Value {
