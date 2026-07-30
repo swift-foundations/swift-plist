@@ -40,6 +40,61 @@ extension Plist.Binary {
                 try Plist.Binary.parse(bytes)
             }
         }
+
+        @Test
+        func `Object declaring a length past the end of input throws instead of trapping`() {
+            var bytes: [UInt8] = Array("bplist00".utf8)
+            // Data object (marker 0x4F = data type, extended length) claiming
+            // 1000 bytes, with only a trailer following — far short of 1000.
+            bytes.append(contentsOf: [0x4F, 0x11, 0x03, 0xE8])  // extended length = 1000
+            bytes.append(0x08)  // offset table: object 0 at byte offset 8
+            bytes.append(contentsOf: [0, 0, 0, 0, 0])  // trailer: unused
+            bytes.append(0)  // sortVersion
+            bytes.append(1)  // offsetIntSize
+            bytes.append(1)  // objectRefSize
+            bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 1])  // numObjects = 1
+            bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 0])  // topObject = 0
+            bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 12])  // offsetTableOffset = 12
+
+            #expect(throws: Plist.Error.unexpectedEndOfData) {
+                try Plist.Binary.parse(bytes)
+            }
+        }
+
+        @Test
+        func `Trailer with out-of-range offsetIntSize throws invalidTrailer`() {
+            var bytes: [UInt8] = Array("bplist00".utf8)
+            bytes.append(0x08)  // some object byte, never reached
+            bytes.append(contentsOf: [0, 0, 0, 0, 0])  // unused
+            bytes.append(0)  // sortVersion
+            bytes.append(0)  // offsetIntSize = 0 (invalid: must be 1...8)
+            bytes.append(1)  // objectRefSize
+            bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 0])  // numObjects
+            bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 0])  // topObject
+            bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 0])  // offsetTableOffset
+
+            #expect(throws: Plist.Error.invalidTrailer) {
+                try Plist.Binary.parse(bytes)
+            }
+        }
+
+        @Test
+        func `Trailer numObjects exceeding Int range throws integerOverflow`() {
+            var bytes: [UInt8] = Array("bplist00".utf8)
+            bytes.append(0x08)
+            bytes.append(contentsOf: [0, 0, 0, 0, 0])  // unused
+            bytes.append(0)  // sortVersion
+            bytes.append(1)  // offsetIntSize
+            bytes.append(1)  // objectRefSize
+            bytes.append(contentsOf: [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])  // numObjects = UInt64.max
+            bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 0])  // topObject
+            bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 0])  // offsetTableOffset
+
+            #expect(throws: Plist.Error.integerOverflow) {
+                try Plist.Binary.parse(bytes)
+            }
+        }
+
     }
 }
 

@@ -79,6 +79,12 @@ extension Plist.Binary.Trailer {
         let objectRefSize = bytes[index]
         index = bytes.index(after: index)
 
+        // Both sizes are byte counts used to size every subsequent read;
+        // outside 1...8 they are not a valid encoding.
+        guard (1...8).contains(offsetIntSize), (1...8).contains(objectRefSize) else {
+            throw .invalidTrailer
+        }
+
         // Read numObjects (8 bytes, big-endian)
         let numObjects = readBigEndianUInt64(bytes, at: &index)
 
