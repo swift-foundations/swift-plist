@@ -204,6 +204,27 @@ extension Plist.XML {
         }
 
         @Test
+        func `Serialize emits version attribute and DOCTYPE`() {
+            let plist = Plist.string("hello")
+            let xml = String(decoding: Plist.XML.serialize(plist), as: UTF8.self)
+
+            #expect(xml.contains("<plist version=\"1.0\">"))
+            #expect(
+                xml.contains(
+                    "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">"
+                )
+            )
+            // The DOCTYPE must precede the root element.
+            let doctypeRange = xml.range(of: "<!DOCTYPE")
+            let plistRange = xml.range(of: "<plist ")
+            #expect(doctypeRange != nil)
+            #expect(plistRange != nil)
+            if let doctypeRange, let plistRange {
+                #expect(doctypeRange.lowerBound < plistRange.lowerBound)
+            }
+        }
+
+        @Test
         func `Serialize integer`() {
             let plist = Plist.integer(42)
             let bytes = Plist.XML.serialize(plist)

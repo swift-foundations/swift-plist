@@ -4,6 +4,21 @@ import Plist_Core
 import RFC_4648
 import XML
 
+// MARK: - Prolog
+
+extension Plist.XML {
+    /// The XML declaration Apple's plist format expects.
+    private static let xmlDeclaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+
+    /// The standard plist DOCTYPE declaration.
+    ///
+    /// Not every consumer requires it, but strict validators and a
+    /// parse-serialize round trip through this package both expect it, so
+    /// it is emitted unconditionally rather than made optional.
+    private static let doctype =
+        "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">"
+}
+
 // MARK: - Serialization
 
 extension Plist.XML {
@@ -15,16 +30,18 @@ extension Plist.XML {
     /// - Returns: The UTF-8 encoded XML bytes.
     public static func serialize(_ plist: Plist, pretty: Bool = false) -> [UInt8] {
         let rootElement = serializeValue(plist.value)
-        let plistElement = XML.element("plist", children: [rootElement])
-
-        // Create document with XML declaration
-        let doc = XML.Document(
-            version: .v1_0,
-            encoding: "UTF-8",
-            root: plistElement
+        let plistElement = XML.element(
+            "plist",
+            attributes: [XML.Attribute(name: "version", value: "1.0")],
+            children: [rootElement]
         )
 
-        return doc.serialize.bytes(pretty: pretty)
+        // swift-xml's Document type has no DOCTYPE support, so the prolog
+        // (declaration + DOCTYPE) is assembled directly and the root
+        // element is serialized on its own.
+        var bytes = Array((xmlDeclaration + "\n" + doctype + "\n").utf8)
+        bytes.append(contentsOf: plistElement.serialize.bytes(pretty: pretty))
+        return bytes
     }
 
     /// Serializes a plist to an XML string.
