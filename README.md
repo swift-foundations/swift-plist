@@ -160,6 +160,8 @@ Plist.Error
 │   ├── .integerOverflow
 │   ├── .circularReference
 │   └── .unexpectedEndOfData
+├── Streaming
+│   └── .sourceSequenceFailure(String)
 └── Deserialization
     ├── .typeMismatch(expected: String, got: String)
     └── .missingKey(String)

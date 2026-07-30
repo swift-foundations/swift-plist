@@ -26,7 +26,7 @@ extension Plist {
                 buffer.append(byte)
             }
         } catch {
-            throw .unknownFormat
+            throw .sourceSequenceFailure("\(error)")
         }
         return try parse(buffer)
     }

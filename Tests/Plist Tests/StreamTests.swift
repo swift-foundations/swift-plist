@@ -249,6 +249,25 @@ struct Test {
         }
     }
 
+    @Test
+    func `Source sequence failure surfaces as sourceSequenceFailure, not unknownFormat`() async {
+        struct SourceFailure: Swift.Error {}
+
+        let bytes = AsyncThrowingStream<UInt8, Swift.Error> { continuation in
+            continuation.yield(0x62)  // a single byte, then the source fails
+            continuation.finish(throwing: SourceFailure())
+        }
+
+        do throws(Plist.Error) {
+            _ = try await Plist.parse(collecting: bytes)
+            Issue.record("Expected error for a failing source sequence")
+        } catch .sourceSequenceFailure(_) {
+            // Expected: distinguishable from a format-detection failure.
+        } catch {
+            Issue.record("Expected .sourceSequenceFailure, got \(error)")
+        }
+    }
+
     // MARK: - Plist.Serializable Async
 
     @Test

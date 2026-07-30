@@ -5,17 +5,13 @@
 extension String {
     /// Creates a string from a Plist string value.
     ///
-    /// Returns the string value if this is a Plist string,
-    /// otherwise returns an empty string.
+    /// Returns `nil` if the Plist value is not a string.
     ///
     /// - Parameter plist: The Plist value.
     @inlinable
-    public init(_ plist: Plist) {
-        if case .string(let value) = plist.raw {
-            self = value
-        } else {
-            self = ""
-        }
+    public init?(_ plist: Plist) {
+        guard case .string(let value) = plist.raw else { return nil }
+        self = value
     }
 }
 

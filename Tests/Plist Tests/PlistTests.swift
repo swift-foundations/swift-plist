@@ -83,7 +83,7 @@ extension Plist.Value {
 
             #expect(plist["missing"].isNull)
             #expect(plist.missing.isNull)
-            #expect(String(plist.missing).isEmpty)
+            #expect(String(plist.missing) == nil)
         }
 
         @Test

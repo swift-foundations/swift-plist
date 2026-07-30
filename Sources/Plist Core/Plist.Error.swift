@@ -49,6 +49,14 @@ extension Plist {
         /// The binary plist data is truncated or incomplete.
         case unexpectedEndOfData
 
+        // MARK: - Streaming
+
+        /// The upstream byte source failed while collecting bytes for parsing.
+        ///
+        /// Distinguishes an I/O or cancellation failure in the source sequence
+        /// from a genuine format-detection failure (`unknownFormat`).
+        case sourceSequenceFailure(String)
+
         // MARK: - Deserialization
 
         /// Type mismatch during deserialization.
@@ -105,6 +113,9 @@ extension Plist.Error: CustomStringConvertible {
 
         case .unexpectedEndOfData:
             return "Unexpected end of data"
+
+        case .sourceSequenceFailure(let message):
+            return "Failed to read source byte sequence: \(message)"
 
         case .typeMismatch(let expected, let got):
             return "Type mismatch: expected \(expected), got \(got)"
