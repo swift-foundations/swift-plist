@@ -33,7 +33,7 @@
 /// accepted stance per catalog §A9's ecosystem note ("every such site inherits
 /// the same accepted stance and the September-2026 retirement trigger").
 ///
-/// Catalog: `swift-institute/Research/swift-compiler-bug-catalog.md` §A9 and its
+/// Catalog: [swift-compiler-bug-catalog.md](https://github.com/swift-institute/Research/blob/main/swift-compiler-bug-catalog.md) §A9 and its
 /// `Parser.Machine.Parser<Byte.Input, …>.parse` new-site addendum (2026-06-27).
 /// Issues: `swift-institute/Issues/swift-issue-tagged-noncopyable-atomic-metadata-crash`.
 enum Toolchain {}
