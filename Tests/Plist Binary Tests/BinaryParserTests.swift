@@ -12,7 +12,8 @@ extension Plist.Binary {
                 0x62, 0x70, 0x6C, 0x69, 0x73, 0x74, 0x30, 0x30,  // "bplist00"
                 0x55, 0x68, 0x65, 0x6C, 0x6C, 0x6F,  // string marker (0x55) + "hello"
                 0x08,  // offset table (single entry = 8)
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // trailer: unused[5], sortVersion, offsetIntSize, objectRefSize
+                // trailer: unused[5], sortVersion, offsetIntSize, objectRefSize
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x01, 0x01,  // offsetIntSize=1, objectRefSize=1
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,  // numObjects=1
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // topObject=0
@@ -86,7 +87,8 @@ extension Plist.Binary {
             bytes.append(0)  // sortVersion
             bytes.append(1)  // offsetIntSize
             bytes.append(1)  // objectRefSize
-            bytes.append(contentsOf: [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])  // numObjects = UInt64.max
+            // numObjects = UInt64.max
+            bytes.append(contentsOf: [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
             bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 0])  // topObject
             bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 0])  // offsetTableOffset
 
@@ -118,7 +120,8 @@ extension Plist.Binary {
         func `16-byte integer that does not fit Int64 throws integerOverflow`() {
             var bytes: [UInt8] = Array("bplist00".utf8)
             bytes.append(0x14)  // 16-byte integer marker
-            bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 1])  // high = 1 (not a valid sign extension)
+            // high = 1 (not a valid sign extension)
+            bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 1])
             bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 0])  // low = 0
             bytes.append(0x08)  // offset table: object 0 at byte offset 8
             bytes.append(contentsOf: [0, 0, 0, 0, 0])  // unused
@@ -138,8 +141,10 @@ extension Plist.Binary {
         func `16-byte integer within Int64 range parses correctly`() throws {
             var bytes: [UInt8] = Array("bplist00".utf8)
             bytes.append(0x14)  // 16-byte integer marker
-            bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 0])  // high = 0 (sign extension of a non-negative low)
-            bytes.append(contentsOf: [0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])  // low = Int64.max
+            // high = 0 (sign extension of a non-negative low)
+            bytes.append(contentsOf: [0, 0, 0, 0, 0, 0, 0, 0])
+            // low = Int64.max
+            bytes.append(contentsOf: [0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
             bytes.append(0x08)  // offset table: object 0 at byte offset 8
             bytes.append(contentsOf: [0, 0, 0, 0, 0])  // unused
             bytes.append(0)  // sortVersion

@@ -105,7 +105,8 @@ struct Test {
 
     @Test
     func `Handle CRLF line endings`() async throws {
-        let input = "<?xml version=\"1.0\"?><plist version=\"1.0\"><integer>1</integer></plist>\r\n<?xml version=\"1.0\"?><plist version=\"1.0\"><integer>2</integer></plist>\r\n"
+        let input =
+            "<?xml version=\"1.0\"?><plist version=\"1.0\"><integer>1</integer></plist>\r\n<?xml version=\"1.0\"?><plist version=\"1.0\"><integer>2</integer></plist>\r\n"
 
         let bytes = AsyncStream<UInt8> { continuation in
             for byte in input.utf8 {
@@ -127,7 +128,8 @@ struct Test {
 
     @Test
     func `Parse without trailing newline`() async throws {
-        let input = "<?xml version=\"1.0\"?><plist version=\"1.0\"><integer>1</integer></plist>\n<?xml version=\"1.0\"?><plist version=\"1.0\"><integer>2</integer></plist>"
+        let input =
+            "<?xml version=\"1.0\"?><plist version=\"1.0\"><integer>1</integer></plist>\n<?xml version=\"1.0\"?><plist version=\"1.0\"><integer>2</integer></plist>"
 
         let bytes = AsyncStream<UInt8> { continuation in
             for byte in input.utf8 {
@@ -173,7 +175,8 @@ struct Test {
 
     @Test
     func `Parse single document from async bytes`() async throws {
-        let input = "<?xml version=\"1.0\"?><plist version=\"1.0\"><dict><key>name</key><string>John</string><key>age</key><integer>30</integer></dict></plist>"
+        let input =
+            "<?xml version=\"1.0\"?><plist version=\"1.0\"><dict><key>name</key><string>John</string><key>age</key><integer>30</integer></dict></plist>"
 
         let bytes = AsyncStream<UInt8> { continuation in
             for byte in input.utf8 {

@@ -114,7 +114,9 @@ extension Plist.Binary.Context {
             throw .integerOverflow
         }
 
-        let (tableByteCount, sizeOverflow) = numObjects.multipliedReportingOverflow(by: offsetIntSize)
+        let (tableByteCount, sizeOverflow) = numObjects.multipliedReportingOverflow(
+            by: offsetIntSize
+        )
         guard !sizeOverflow else {
             throw .integerOverflow
         }
@@ -244,7 +246,11 @@ extension Plist.Binary.Context {
             elements.reserveCapacity(count)
 
             for _ in 0..<count {
-                let elementRef = try Self.readUnsignedInt(bytes, at: &index, size: Int(trailer.objectRefSize))
+                let elementRef = try Self.readUnsignedInt(
+                    bytes,
+                    at: &index,
+                    size: Int(trailer.objectRefSize)
+                )
                 let element = try parseObject(at: elementRef)
                 elements.append(element)
             }
@@ -261,7 +267,11 @@ extension Plist.Binary.Context {
             var keyRefs: [UInt64] = []
             keyRefs.reserveCapacity(count)
             for _ in 0..<count {
-                let keyRef = try Self.readUnsignedInt(bytes, at: &index, size: Int(trailer.objectRefSize))
+                let keyRef = try Self.readUnsignedInt(
+                    bytes,
+                    at: &index,
+                    size: Int(trailer.objectRefSize)
+                )
                 keyRefs.append(keyRef)
             }
 
@@ -269,7 +279,11 @@ extension Plist.Binary.Context {
             var valueRefs: [UInt64] = []
             valueRefs.reserveCapacity(count)
             for _ in 0..<count {
-                let valueRef = try Self.readUnsignedInt(bytes, at: &index, size: Int(trailer.objectRefSize))
+                let valueRef = try Self.readUnsignedInt(
+                    bytes,
+                    at: &index,
+                    size: Int(trailer.objectRefSize)
+                )
                 valueRefs.append(valueRef)
             }
 
