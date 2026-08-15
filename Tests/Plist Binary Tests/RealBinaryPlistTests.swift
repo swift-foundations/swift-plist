@@ -85,7 +85,9 @@
                 if let dict = plist.dictionary {
                     let keys = dict.map { $0.key }
                     // Dock plist typically has these keys
-                    let hasTypicalKey = keys.contains("autohide") || keys.contains("tilesize") || keys.contains("persistent-apps")
+                    let hasTypicalKey =
+                        keys.contains("autohide") || keys.contains("tilesize")
+                        || keys.contains("persistent-apps")
                     #expect(hasTypicalKey, "Expected typical dock preference keys")
                 }
             }
