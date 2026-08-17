@@ -15,12 +15,43 @@ extension Plist.XML {
     public static func parse(_ string: String) throws(Plist.Error) -> Plist {
         let doc: XML.Document
         do throws(XML.Error) {
-            doc = try XML.parse(string)
+            doc = try XML.parse(removingDoctype(string))
         } catch {
             throw .invalidXML(message: "\(error)", line: 0, column: 0)
         }
 
         return try parseDocument(doc)
+    }
+
+    /// Returns the document without its `<!DOCTYPE …>` declaration.
+    ///
+    /// swift-xml's document model has no DOCTYPE support — the serializer
+    /// assembles the plist prolog directly for that same reason — and reads
+    /// the declaration as an element name, so a document carrying one fails
+    /// with `Invalid XML name`. Every plist Apple's tools write carries one,
+    /// and so does this package's own output, so the declaration is dropped
+    /// before the document is handed over rather than rejected.
+    ///
+    /// An internal subset is skipped with it: `>` inside `[…]` does not end
+    /// the declaration.
+    private static func removingDoctype(_ string: String) -> String {
+        guard let declaration = string.firstRange(of: "<!DOCTYPE") else { return string }
+
+        var index = declaration.upperBound
+        var depth = 0
+        while index < string.endIndex {
+            let character = string[index]
+            index = string.index(after: index)
+            if character == "[" {
+                depth += 1
+            } else if character == "]" {
+                depth -= 1
+            } else if character == ">", depth <= 0 {
+                break
+            }
+        }
+
+        return String(string[string.startIndex..<declaration.lowerBound]) + String(string[index...])
     }
 
     /// Parses an XML plist from bytes.
@@ -32,14 +63,7 @@ extension Plist.XML {
         _ bytes: Bytes
     ) throws(Plist.Error) -> Plist
     where Bytes: Swift.Collection<UInt8>, Bytes: Sendable {
-        let doc: XML.Document
-        do throws(XML.Error) {
-            doc = try XML.parse(bytes)
-        } catch {
-            throw .invalidXML(message: "\(error)", line: 0, column: 0)
-        }
-
-        return try parseDocument(doc)
+        try parse(String(decoding: bytes, as: UTF8.self))
     }
 }
 
