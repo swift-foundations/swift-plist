@@ -5,13 +5,7 @@ import Testing
 
 @testable import Plist
 
-@Suite(
-
-    .disabled(
-        if: Toolchain.hasTaggedMetadataSIGSEGV,
-        "§A9 Tagged-metadata SIGSEGV on Swift 6.3.x (Plist.parse(collecting:) / Plist.parse.stream(nd:) route XML input through Plist.XML.parse → XML.parse → Parser.Machine.Parser over Byte.Input forces Tagged VWT); fixed on 6.4+"
-    )
-)
+@Suite
 struct Test {
 
     // MARK: - ND Plist Streaming
@@ -256,7 +250,7 @@ struct Test {
     func `Source sequence failure surfaces as sourceSequenceFailure, not unknownFormat`() async {
         struct SourceFailure: Swift.Error {}
 
-        let bytes = AsyncThrowingStream<UInt8, Swift.Error> { continuation in
+        let bytes = AsyncThrowingStream<UInt8, any Swift.Error> { continuation in
             continuation.yield(0x62)  // a single byte, then the source fails
             continuation.finish(throwing: SourceFailure())
         }

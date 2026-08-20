@@ -10,19 +10,19 @@
     // MARK: - File Reading Helper
 
     private func readFile(_ path: String) -> [UInt8]? {
-        guard let file = fopen(path, "rb") else {
+        guard let file = unsafe fopen(path, "rb") else {
             return nil
         }
-        defer { fclose(file) }
+        defer { unsafe fclose(file) }
 
-        fseek(file, 0, SEEK_END)
-        let size = ftell(file)
-        fseek(file, 0, SEEK_SET)
+        unsafe fseek(file, 0, SEEK_END)
+        let size = unsafe ftell(file)
+        unsafe fseek(file, 0, SEEK_SET)
 
         guard size > 0 else { return nil }
 
         var buffer = [UInt8](repeating: 0, count: size)
-        let bytesRead = fread(&buffer, 1, size, file)
+        let bytesRead = unsafe fread(&buffer, 1, size, file)
         guard bytesRead == size else { return nil }
 
         return buffer
@@ -35,9 +35,11 @@
     /// quietly rather than fail — a missing local preferences file is not a
     /// parser defect.
     private func preferencesPath(_ name: String) -> String? {
-        guard let home = getenv("HOME").map({ String(cString: $0) }), !home.isEmpty else {
+        guard let homePointer = unsafe getenv("HOME") else {
             return nil
         }
+        let home = unsafe String(cString: homePointer)
+        guard !home.isEmpty else { return nil }
         return home + "/Library/Preferences/" + name
     }
 

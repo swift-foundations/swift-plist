@@ -2,13 +2,7 @@ import Plist_XML
 import Testing
 
 extension Plist.XML {
-    @Suite(
-
-        .disabled(
-            if: Toolchain.hasTaggedMetadataSIGSEGV,
-            "§A9 Tagged-metadata SIGSEGV on Swift 6.3.x (Plist.XML.parse → XML.parse → W3C_XML.parse → Parser.Machine.Parser over Byte.Input forces Tagged VWT); fixed on 6.4+"
-        )
-    )
+    @Suite
     struct Parser {
         @Test
         func `Parse string element`() throws {
@@ -186,13 +180,7 @@ extension Plist.XML {
 }
 
 extension Plist.XML {
-    @Suite(
-
-        .disabled(
-            if: Toolchain.hasTaggedMetadataSIGSEGV,
-            "§A9 Tagged-metadata SIGSEGV on Swift 6.3.x (round-trip tests call Plist.XML.parse → XML.parse → W3C_XML.parse → Parser.Machine.Parser over Byte.Input forces Tagged VWT); fixed on 6.4+"
-        )
-    )
+    @Suite
     struct Serializer {
         @Test
         func `Serialize string`() {
