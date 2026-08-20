@@ -1,25 +1,28 @@
-// swift-tools-version: 6.3.3
+// swift-tools-version: 6.4
 
 import PackageDescription
 
 let package = Package(
     name: "swift-plist",
     platforms: [
-        .macOS("27"),
-        .iOS("27"),
-        .tvOS("27"),
-        .watchOS("27"),
-        .visionOS("27")
+        .macOS(.v27),
+        .iOS(.v27),
+        .tvOS(.v27),
+        .watchOS(.v27),
+        .visionOS(.v27),
     ],
     products: [
         .library(name: "Plist", targets: ["Plist"])
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-primitives/swift-byte-primitives.git", branch: "main"),
+        .package(
+            url: "https://github.com/swift-primitives/swift-byte-primitives.git",
+            branch: "main"
+        ),
         .package(url: "https://github.com/swift-foundations/swift-xml.git", branch: "main"),
         .package(url: "https://github.com/swift-foundations/swift-async.git", branch: "main"),
         .package(url: "https://github.com/swift-ietf/swift-rfc-4648.git", branch: "main"),
-        .package(url: "https://github.com/swift-iso/swift-iso-8601.git", branch: "main")
+        .package(url: "https://github.com/swift-iso/swift-iso-8601.git", branch: "main"),
     ],
     targets: [
         // Core: Plist, Plist.Value, Plist.Error
@@ -35,7 +38,7 @@ let package = Package(
                 .product(name: "Byte Primitive", package: "swift-byte-primitives"),
                 .product(name: "XML", package: "swift-xml"),
                 .product(name: "RFC 4648", package: "swift-rfc-4648"),
-                .product(name: "ISO 8601", package: "swift-iso-8601")
+                .product(name: "ISO 8601", package: "swift-iso-8601"),
             ]
         ),
         // Binary parser/serializer
@@ -52,31 +55,30 @@ let package = Package(
                 "Plist Core",
                 "Plist XML",
                 "Plist Binary",
-                .product(name: "Async", package: "swift-async")
+                .product(name: "Async", package: "swift-async"),
             ]
         ),
         .testTarget(
             name: "Plist Tests",
             dependencies: [
-                "Plist",
+                "Plist"
             ]
         ),
         .testTarget(
             name: "Plist XML Tests",
             dependencies: [
-                "Plist XML",
+                "Plist XML"
             ]
         ),
         .testTarget(
             name: "Plist Binary Tests",
             dependencies: [
-                "Plist Binary",
+                "Plist Binary"
             ]
         ),
     ],
     swiftLanguageModes: [.v6]
 )
-
 
 for target in package.targets where ![.system, .binary, .plugin, .macro].contains(target.type) {
     let ecosystem: [SwiftSetting] = [
