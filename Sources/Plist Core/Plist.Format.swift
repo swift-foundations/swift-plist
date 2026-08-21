@@ -1,21 +1,15 @@
 extension Plist {
-    /// The serialization format for a plist.
+
     public enum Format: Sendable, Hashable {
-        /// XML plist format.
+
         case xml
 
-        /// Binary plist format.
         case binary
     }
 }
 
-// MARK: - Format Detection
-
 extension Plist.Format {
-    /// Detects the format of a plist from its bytes.
-    ///
-    /// - Parameter bytes: The plist bytes.
-    /// - Returns: The detected format, or `nil` if the format cannot be determined.
+
     @inlinable
     public static func detect<Bytes>(_ bytes: Bytes) -> Plist.Format?
     where Bytes: Swift.Collection<UInt8> {
@@ -29,19 +23,16 @@ extension Plist.Format {
         let b4 = iterator.next()!
         let b5 = iterator.next()!
 
-        // Binary plist: starts with "bplist"
-        if b0 == 0x62,  // 'b'
-            b1 == 0x70,  // 'p'
-            b2 == 0x6C,  // 'l'
-            b3 == 0x69,  // 'i'
-            b4 == 0x73,  // 's'
-            b5 == 0x74  // 't'
+        if b0 == 0x62,
+            b1 == 0x70,
+            b2 == 0x6C,
+            b3 == 0x69,
+            b4 == 0x73,
+            b5 == 0x74
         {
             return .binary
         }
 
-        // XML plist: starts with "<?xml" or "<plist" or whitespace followed by these
-        // Skip leading whitespace
         var offset = 0
         for byte in bytes {
             if byte == 0x20 || byte == 0x09 || byte == 0x0A || byte == 0x0D {
@@ -61,32 +52,29 @@ extension Plist.Format {
         let r3 = remainingIterator.next()!
         let r4 = remainingIterator.next()!
 
-        // Check for "<?xml"
-        if r0 == 0x3C,  // '<'
-            r1 == 0x3F,  // '?'
-            r2 == 0x78,  // 'x'
-            r3 == 0x6D,  // 'm'
-            r4 == 0x6C  // 'l'
+        if r0 == 0x3C,
+            r1 == 0x3F,
+            r2 == 0x78,
+            r3 == 0x6D,
+            r4 == 0x6C
         {
             return .xml
         }
 
-        // Check for "<plis" (start of "<plist")
-        if r0 == 0x3C,  // '<'
-            r1 == 0x70,  // 'p'
-            r2 == 0x6C,  // 'l'
-            r3 == 0x69,  // 'i'
-            r4 == 0x73  // 's'
+        if r0 == 0x3C,
+            r1 == 0x70,
+            r2 == 0x6C,
+            r3 == 0x69,
+            r4 == 0x73
         {
             return .xml
         }
 
-        // Check for "<!DOC" (DOCTYPE declaration)
-        if r0 == 0x3C,  // '<'
-            r1 == 0x21,  // '!'
-            r2 == 0x44,  // 'D'
-            r3 == 0x4F,  // 'O'
-            r4 == 0x43  // 'C'
+        if r0 == 0x3C,
+            r1 == 0x21,
+            r2 == 0x44,
+            r3 == 0x4F,
+            r4 == 0x43
         {
             return .xml
         }

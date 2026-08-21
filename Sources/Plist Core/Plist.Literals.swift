@@ -1,5 +1,3 @@
-// MARK: - Literal Expressibility
-
 extension Plist: ExpressibleByNilLiteral {
     @inlinable
     public init(nilLiteral: ()) {

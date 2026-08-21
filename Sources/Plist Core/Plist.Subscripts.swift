@@ -1,9 +1,5 @@
-// MARK: - Subscripts
-
 extension Plist {
-    /// Accesses a dictionary value by key.
-    ///
-    /// Returns `.null` if this is not a dictionary or if the key is not found.
+
     @inlinable
     public subscript(key: String) -> Plist {
         guard case .dictionary(let members) = raw else {
@@ -17,9 +13,6 @@ extension Plist {
         return .null
     }
 
-    /// Accesses an array element by index.
-    ///
-    /// Returns `.null` if this is not an array or if the index is out of bounds.
     @inlinable
     public subscript(index: Int) -> Plist {
         guard case .array(let elements) = raw else {
@@ -31,9 +24,6 @@ extension Plist {
         return Plist(elements[index])
     }
 
-    /// Dynamic member lookup for dictionary access.
-    ///
-    /// Enables `plist.name` syntax as shorthand for `plist["name"]`.
     @inlinable
     public subscript(dynamicMember member: String) -> Plist {
         self[member]

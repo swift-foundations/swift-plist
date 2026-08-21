@@ -1,45 +1,26 @@
 extension Plist {
-    /// The underlying plist value representation.
-    ///
-    /// Represents any valid plist value: string, integer, real,
-    /// boolean, data, date, array, or dictionary.
+
     public enum Value: Sendable, Hashable {
-        /// A string value (`<string>` in XML).
+
         case string(String)
 
-        /// A 64-bit signed integer (`<integer>` in XML).
         case integer(Int64)
 
-        /// A 64-bit floating-point number (`<real>` in XML).
         case real(Double)
 
-        /// A boolean value (`<true/>` or `<false/>` in XML).
         case bool(Bool)
 
-        /// Raw binary data (`<data>` base64-encoded in XML).
         case data([UInt8])
 
-        /// A date value (`<date>` ISO 8601 format in XML).
-        ///
-        /// Stored as seconds since the Apple reference date (2001-01-01 00:00:00 UTC).
         case date(Double)
 
-        /// An ordered array (`<array>` in XML).
         case array([Self])
 
-        /// A key-value dictionary (`<dict>` in XML).
-        ///
-        /// Keys are always strings. Order is preserved.
         case dictionary([(key: String, value: Self)])
 
-        /// A null placeholder for missing or invalid values.
-        ///
-        /// This is not a valid plist type but is used internally for safe chaining.
         case null
     }
 }
-
-// MARK: - Hashable Conformance for Dictionary
 
 extension Plist.Value {
     public static func == (lhs: Plist.Value, rhs: Plist.Value) -> Bool {
@@ -127,8 +108,6 @@ extension Plist.Value {
         }
     }
 }
-
-// MARK: - Literal Conformances on Plist.Value
 
 extension Plist.Value: ExpressibleByNilLiteral {
     @inlinable

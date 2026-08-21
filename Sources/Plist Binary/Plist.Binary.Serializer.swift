@@ -1,12 +1,7 @@
 import Plist_Core
 
-// MARK: - Serialization
-
 extension Plist.Binary {
-    /// Serializes a plist to binary format.
-    ///
-    /// - Parameter plist: The plist value to serialize.
-    /// - Returns: The binary plist bytes.
+
     public static func serialize(_ plist: Plist) -> [UInt8] {
         let writer = Writer()
         writer.write(plist)
@@ -14,10 +9,8 @@ extension Plist.Binary {
     }
 }
 
-// MARK: - Writer
-
 extension Plist.Binary {
-    /// Internal binary plist writer.
+
     final class Writer {
         var bytes: [UInt8] = []
         var objects: [ObjectRef] = []
@@ -26,8 +19,6 @@ extension Plist.Binary {
     }
 }
 
-// MARK: - Object Reference
-
 extension Plist.Binary.Writer {
     struct ObjectRef {
         let value: Plist.Value
@@ -35,30 +26,24 @@ extension Plist.Binary.Writer {
     }
 }
 
-// MARK: - Write Entry Point
-
 extension Plist.Binary.Writer {
     func write(_ plist: Plist) {
-        // Collect all objects (flatten and deduplicate)
+
         let rootIndex = collectObjects(plist.value)
 
-        // Write header
         writeHeader()
 
-        // Write objects and record offsets
         for i in 0..<objects.count {
             objectOffsets.append(bytes.count)
             writeObject(objects[i].value)
         }
 
-        // Write offset table
         let offsetTableOffset = bytes.count
         let offsetSize = bytesNeeded(for: UInt64(bytes.count))
         for offset in objectOffsets {
             writeBigEndian(UInt64(offset), size: offsetSize)
         }
 
-        // Write trailer
         writeTrailer(
             offsetSize: offsetSize,
             objectRefSize: bytesNeeded(for: UInt64(objects.count)),
@@ -69,11 +54,9 @@ extension Plist.Binary.Writer {
     }
 }
 
-// MARK: - Object Collection
-
 extension Plist.Binary.Writer {
     func collectObjects(_ value: Plist.Value) -> Int {
-        // Check if we've already seen this object
+
         if let existingIndex = uniqueObjects[value] {
             return existingIndex
         }
@@ -82,7 +65,6 @@ extension Plist.Binary.Writer {
         objects.append(ObjectRef(value: value))
         uniqueObjects[value] = index
 
-        // Recursively collect child objects
         switch value {
         case .array(let elements):
             for element in elements {
@@ -103,16 +85,12 @@ extension Plist.Binary.Writer {
     }
 }
 
-// MARK: - Header
-
 extension Plist.Binary.Writer {
     func writeHeader() {
-        // "bplist00"
+
         bytes.append(contentsOf: [0x62, 0x70, 0x6C, 0x69, 0x73, 0x74, 0x30, 0x30])
     }
 }
-
-// MARK: - Object Writing
 
 extension Plist.Binary.Writer {
     func writeObject(_ value: Plist.Value) {
@@ -147,8 +125,6 @@ extension Plist.Binary.Writer {
     }
 }
 
-// MARK: - Primitive Writing
-
 extension Plist.Binary.Writer {
     func writeInteger(_ value: Int64) {
         let unsigned = UInt64(bitPattern: value)
@@ -165,7 +141,7 @@ extension Plist.Binary.Writer {
                 size = 8
             }
         } else {
-            // Negative - need to consider sign extension
+
             if value >= Int8.min {
                 size = 1
             } else if value >= Int16.min {
@@ -177,7 +153,6 @@ extension Plist.Binary.Writer {
             }
         }
 
-        // Size code is log2(size)
         let sizeCode: UInt8
         switch size {
         case 1: sizeCode = 0
@@ -207,14 +182,14 @@ extension Plist.Binary.Writer {
     }
 
     func writeString(_ text: String) {
-        // Check if string is ASCII-only
+
         let isASCII = text.utf8.allSatisfy { $0 < 128 }
 
         if isASCII {
             writeMarkerWithLength(Plist.Binary.Marker.asciiType, length: text.utf8.count)
             bytes.append(contentsOf: text.utf8)
         } else {
-            // Write as UTF-16 big-endian
+
             let utf16 = Array(text.utf16)
             writeMarkerWithLength(Plist.Binary.Marker.unicodeType, length: utf16.count)
             for codeUnit in utf16 {
@@ -239,21 +214,17 @@ extension Plist.Binary.Writer {
 
         let refSize = bytesNeeded(for: UInt64(objects.count))
 
-        // Write key references
         for member in members {
             let keyRef = uniqueObjects[.string(member.key)]!
             writeBigEndian(UInt64(keyRef), size: refSize)
         }
 
-        // Write value references
         for member in members {
             let valueRef = uniqueObjects[member.value]!
             writeBigEndian(UInt64(valueRef), size: refSize)
         }
     }
 }
-
-// MARK: - Marker and Length
 
 extension Plist.Binary.Writer {
     func writeMarkerWithLength(_ marker: UInt8, length: Int) {
@@ -266,8 +237,6 @@ extension Plist.Binary.Writer {
     }
 }
 
-// MARK: - Big-Endian Writing
-
 extension Plist.Binary.Writer {
     func writeBigEndian(_ value: UInt64, size: Int) {
         for i in stride(from: size - 1, through: 0, by: -1) {
@@ -275,8 +244,6 @@ extension Plist.Binary.Writer {
         }
     }
 }
-
-// MARK: - Trailer
 
 extension Plist.Binary.Writer {
     func writeTrailer(
@@ -286,30 +253,22 @@ extension Plist.Binary.Writer {
         topObject: UInt64,
         offsetTableOffset: UInt64
     ) {
-        // 5 unused bytes
+
         bytes.append(contentsOf: [0, 0, 0, 0, 0])
 
-        // Sort version
         bytes.append(0)
 
-        // Offset int size
         bytes.append(UInt8(offsetSize))
 
-        // Object ref size
         bytes.append(UInt8(objectRefSize))
 
-        // Num objects (8 bytes big-endian)
         writeBigEndian(numObjects, size: 8)
 
-        // Top object (8 bytes big-endian)
         writeBigEndian(topObject, size: 8)
 
-        // Offset table offset (8 bytes big-endian)
         writeBigEndian(offsetTableOffset, size: 8)
     }
 }
-
-// MARK: - Helpers
 
 extension Plist.Binary.Writer {
     func bytesNeeded(for value: UInt64) -> Int {

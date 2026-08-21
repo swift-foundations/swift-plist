@@ -1,33 +1,26 @@
 extension Plist {
-    /// A type that can be serialized to and deserialized from plist format.
+
     public protocol Serializable: Sendable {
-        /// Serializes this value to a plist representation.
+
         static func serialize(_ value: Self) -> Plist
 
-        /// Deserializes a plist value to this type.
         static func deserialize(_ plist: Plist) throws(Plist.Error) -> Self
     }
 }
 
-// MARK: - Convenience Extensions
-
 extension Plist.Serializable {
-    /// The plist representation of this value.
+
     @inlinable
     public var plist: Plist {
         Self.serialize(self)
     }
 
-    /// Creates an instance from a plist value.
     @inlinable
     public init(plist: Plist) throws(Plist.Error) {
         self = try Self.deserialize(plist)
     }
 }
 
-// MARK: - Plist Conformance
-
-// swiftlint:disable:next prefer_self_in_static_references - reason: `Self.Serializable` compiles here but does NOT establish genuine conformance to `Plist.Serializable` (verified via swiftc: a generic `<T: Plist.Serializable>` call site then fails with "requires that 'Plist' conform to 'Plist.Serializable'") — the qualified form is required.
 extension Plist: Plist.Serializable {
     @inlinable
     public static func serialize(_ value: Plist) -> Plist {
@@ -39,8 +32,6 @@ extension Plist: Plist.Serializable {
         plist
     }
 }
-
-// MARK: - String Conformance
 
 extension String: Plist.Serializable {
     @inlinable
@@ -56,8 +47,6 @@ extension String: Plist.Serializable {
         return value
     }
 }
-
-// MARK: - Integer Conformances
 
 extension Int: Plist.Serializable {
     @inlinable
@@ -92,8 +81,6 @@ extension Int64: Plist.Serializable {
     }
 }
 
-// MARK: - Double Conformance
-
 extension Double: Plist.Serializable {
     @inlinable
     public static func serialize(_ value: Double) -> Plist {
@@ -115,8 +102,6 @@ extension Double: Plist.Serializable {
     }
 }
 
-// MARK: - Bool Conformance
-
 extension Bool: Plist.Serializable {
     @inlinable
     public static func serialize(_ value: Bool) -> Plist {
@@ -131,8 +116,6 @@ extension Bool: Plist.Serializable {
         return value
     }
 }
-
-// MARK: - Array Conformance
 
 extension Array: Plist.Serializable where Element: Plist.Serializable {
     @inlinable
@@ -154,8 +137,6 @@ extension Array: Plist.Serializable where Element: Plist.Serializable {
     }
 }
 
-// MARK: - Dictionary Conformance
-
 extension Dictionary: Plist.Serializable where Key == String, Value: Plist.Serializable {
     @inlinable
     public static func serialize(_ value: [String: Value]) -> Plist {
@@ -176,8 +157,6 @@ extension Dictionary: Plist.Serializable where Key == String, Value: Plist.Seria
     }
 }
 
-// MARK: - Optional Conformance
-
 extension Optional: Plist.Serializable where Wrapped: Plist.Serializable {
     @inlinable
     public static func serialize(_ value: Wrapped?) -> Plist {
@@ -196,10 +175,8 @@ extension Optional: Plist.Serializable where Wrapped: Plist.Serializable {
     }
 }
 
-// MARK: - Type Name Helper
-
 extension Plist {
-    /// The name of this plist value's type.
+
     @usableFromInline
     internal var typeName: String {
         switch raw {

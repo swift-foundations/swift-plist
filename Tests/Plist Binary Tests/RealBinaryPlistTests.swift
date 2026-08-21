@@ -1,13 +1,7 @@
-// These suites parse real macOS system plists (Finder/Dock/loginwindow
-// preferences under `~/Library/Preferences`) — content and paths that only
-// exist on Darwin, so the whole file is gated rather than swapped onto a
-// cross-platform file-reading primitive.
 #if canImport(Darwin)
     import Darwin
     import Plist_Binary
     import Testing
-
-    // MARK: - File Reading Helper
 
     private func readFile(_ path: String) -> [UInt8]? {
         guard let file = unsafe fopen(path, "rb") else {
@@ -28,12 +22,6 @@
         return buffer
     }
 
-    /// Preferences path for the current user, when resolvable.
-    ///
-    /// These suites parse real system plists opportunistically: on machines
-    /// without the expected files (CI runners, fresh installs) the tests skip
-    /// quietly rather than fail — a missing local preferences file is not a
-    /// parser defect.
     private func preferencesPath(_ name: String) -> String? {
         guard let homePointer = unsafe getenv("HOME") else {
             return nil
@@ -42,8 +30,6 @@
         guard !home.isEmpty else { return nil }
         return home + "/Library/Preferences/" + name
     }
-
-    // MARK: - Tests
 
     extension Plist.Binary {
         @Suite
@@ -54,17 +40,13 @@
                     let bytes = readFile(path)
                 else { return }
 
-                // Verify it's a binary plist
                 let format = Plist.Format.detect(bytes)
                 #expect(format == .binary, "Expected binary plist format")
 
-                // Parse it
                 let plist = try Plist.Binary.parse(bytes)
 
-                // Finder prefs are always a dictionary
                 #expect(plist.dictionary != nil, "Expected dictionary at root")
 
-                // Should have many keys
                 if let dict = plist.dictionary {
                     #expect(dict.count > 10, "Expected many keys in Finder preferences")
                 }
@@ -83,10 +65,9 @@
 
                 #expect(plist.dictionary != nil, "Expected dictionary at root")
 
-                // Check for known dock keys
                 if let dict = plist.dictionary {
                     let keys = dict.map { $0.key }
-                    // Dock plist typically has these keys
+
                     let hasTypicalKey =
                         keys.contains("autohide") || keys.contains("tilesize")
                         || keys.contains("persistent-apps")
@@ -96,8 +77,7 @@
 
             @Test
             func `Parse any available binary plist`() throws {
-                // Try several common binary plist locations; absence of all of
-                // them (CI runners, fresh installs) is a quiet skip, not a failure.
+
                 let candidates = [
                     preferencesPath("com.apple.finder.plist"),
                     preferencesPath("com.apple.dock.plist"),
@@ -120,4 +100,4 @@
             }
         }
     }
-#endif  // canImport(Darwin)
+#endif

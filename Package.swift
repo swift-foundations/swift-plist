@@ -25,12 +25,12 @@ let package = Package(
         .package(url: "https://github.com/swift-iso/swift-iso-8601.git", branch: "main"),
     ],
     targets: [
-        // Core: Plist, Plist.Value, Plist.Error
+
         .target(
             name: "Plist Core",
             dependencies: []
         ),
-        // XML parser/serializer
+
         .target(
             name: "Plist XML",
             dependencies: [
@@ -41,14 +41,14 @@ let package = Package(
                 .product(name: "ISO 8601", package: "swift-iso-8601"),
             ]
         ),
-        // Binary parser/serializer
+
         .target(
             name: "Plist Binary",
             dependencies: [
                 "Plist Core"
             ]
         ),
-        // Main target: re-exports all and adds convenience parsing
+
         .target(
             name: "Plist",
             dependencies: [

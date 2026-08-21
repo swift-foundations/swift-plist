@@ -173,7 +173,7 @@ extension Plist.Format {
 
         @Test
         func `Detect binary format`() {
-            let binary: [UInt8] = [0x62, 0x70, 0x6C, 0x69, 0x73, 0x74, 0x30, 0x30]  // "bplist00"
+            let binary: [UInt8] = [0x62, 0x70, 0x6C, 0x69, 0x73, 0x74, 0x30, 0x30]
             let format = Plist.Format.detect(binary)
             #expect(format == .binary)
         }

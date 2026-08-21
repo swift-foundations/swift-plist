@@ -92,7 +92,7 @@ extension Plist.XML {
                 """
 
             let plist = try Plist.XML.parse(xml)
-            #expect(plist.data == [0x48, 0x65, 0x6C, 0x6C, 0x6F])  // "Hello"
+            #expect(plist.data == [0x48, 0x65, 0x6C, 0x6C, 0x6F])
         }
 
         @Test
@@ -106,7 +106,7 @@ extension Plist.XML {
 
             let plist = try Plist.XML.parse(xml)
             #expect(plist.isDate)
-            // Date should be seconds since 2001-01-01
+
             #expect(plist.date != nil)
         }
 
@@ -202,7 +202,7 @@ extension Plist.XML {
                     "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">"
                 )
             )
-            // The DOCTYPE must precede the root element.
+
             let doctypeRange = xml.range(of: "<!DOCTYPE")
             let plistRange = xml.range(of: "<plist ")
             #expect(doctypeRange != nil)

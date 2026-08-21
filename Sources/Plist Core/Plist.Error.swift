@@ -1,73 +1,42 @@
 extension Plist {
-    /// Errors that can occur during plist parsing and deserialization.
-    public enum Error: Swift.Error, Sendable, Hashable {
-        // MARK: - Format Detection
 
-        /// The input format could not be determined.
+    public enum Error: Swift.Error, Sendable, Hashable {
+
         case unknownFormat
 
-        /// The binary plist version is not supported.
         case unsupportedVersion(String)
 
-        // MARK: - XML Parsing
-
-        /// Invalid XML syntax.
         case invalidXML(message: String, line: Int, column: Int)
 
-        /// Encountered an unexpected element.
         case unexpectedElement(expected: String, got: String)
 
-        /// A required element is missing.
         case missingRequiredElement(String)
 
-        /// Invalid Base64-encoded data.
         case invalidBase64Data
 
-        /// Invalid date format.
         case invalidDateFormat(String)
 
-        // MARK: - Binary Parsing
-
-        /// The file does not start with a valid plist magic number.
         case invalidMagic
 
-        /// The binary plist trailer is invalid.
         case invalidTrailer
 
-        /// An object reference is out of bounds.
         case invalidObjectReference(UInt64)
 
-        /// An unrecognized object type marker was encountered.
         case invalidObjectType(UInt8)
 
-        /// An integer value overflowed during parsing.
         case integerOverflow
 
-        /// A circular reference was detected.
         case circularReference
 
-        /// The binary plist data is truncated or incomplete.
         case unexpectedEndOfData
 
-        // MARK: - Streaming
-
-        /// The upstream byte source failed while collecting bytes for parsing.
-        ///
-        /// Distinguishes an I/O or cancellation failure in the source sequence
-        /// from a genuine format-detection failure (`unknownFormat`).
         case sourceSequenceFailure(String)
 
-        // MARK: - Deserialization
-
-        /// Type mismatch during deserialization.
         case typeMismatch(expected: String, got: String)
 
-        /// A required key is missing from a dictionary.
         case missingKey(String)
     }
 }
-
-// MARK: - CustomStringConvertible
 
 extension Plist.Error: CustomStringConvertible {
     public var description: String {

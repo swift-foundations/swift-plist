@@ -1,13 +1,7 @@
 import Plist_Core
 
-// MARK: - Parsing
-
 extension Plist.Binary {
-    /// Parses a binary plist from bytes.
-    ///
-    /// - Parameter bytes: The binary plist bytes.
-    /// - Returns: The parsed plist value.
-    /// - Throws: `Plist.Error` if parsing fails.
+
     public static func parse<Bytes>(
         _ bytes: Bytes
     ) throws(Plist.Error) -> Plist
@@ -17,44 +11,27 @@ extension Plist.Binary {
     }
 }
 
-// MARK: - Parser Context
-
 extension Plist.Binary {
-    // WHY: Category D — structural Sendable workaround.
-    // WHY: Generic Collection<UInt8> parameter blocks structural Sendable
-    // WHY: inference. Single-threaded parser state with mutable parsedObjects.
-    // WHY: No caller invariant to uphold — parse is single-threaded.
-    // WHEN TO REMOVE: When compiler gains structural Sendable inference through
-    // WHEN TO REMOVE: generic Collection parameters.
-    // TRACKING: unsafe-audit-findings.md Category D; SP-4.
-    /// Internal parsing context.
+
     final class Context<Bytes: Swift.Collection<UInt8>>: @unchecked Sendable {
         let bytes: Bytes
         let trailer: Trailer
         let offsets: [UInt64]
         var parsedObjects: [UInt64: Plist.Value] = [:]
 
-        /// Object indices currently being parsed, tracking the recursion
-        /// stack so a self-referencing object throws `.circularReference`
-        /// instead of silently caching as `.null`.
         var objectsInProgress: Set<UInt64> = []
 
         init(_ bytes: Bytes) throws(Plist.Error) {
             self.bytes = bytes
 
-            // Validate magic number
             try Self.validateMagic(bytes)
 
-            // Parse trailer
             self.trailer = try Trailer.parse(from: bytes)
 
-            // Parse offset table
             self.offsets = try Self.parseOffsetTable(bytes, trailer: trailer)
         }
     }
 }
-
-// MARK: - Root Parsing
 
 extension Plist.Binary.Context {
     func parseRoot() throws(Plist.Error) -> Plist {
@@ -64,9 +41,6 @@ extension Plist.Binary.Context {
     }
 }
 
-// MARK: - Magic Validation
-
-/// Binary plist magic bytes: "bplist"
 private let _binaryPlistMagic: [UInt8] = [0x62, 0x70, 0x6C, 0x69, 0x73, 0x74]
 
 extension Plist.Binary.Context {
@@ -83,22 +57,19 @@ extension Plist.Binary.Context {
             index = bytes.index(after: index)
         }
 
-        // Check version (00 or 01)
         let v0 = bytes[index]
         index = bytes.index(after: index)
         let v1 = bytes[index]
 
-        guard v0 == 0x30 else {  // '0'
+        guard v0 == 0x30 else {
             throw .unsupportedVersion("\(v0)\(v1)")
         }
 
-        guard v1 == 0x30 || v1 == 0x31 else {  // '0' or '1'
+        guard v1 == 0x30 || v1 == 0x31 else {
             throw .unsupportedVersion("0\(Character(UnicodeScalar(v1)))")
         }
     }
 }
-
-// MARK: - Offset Table
 
 extension Plist.Binary.Context {
     static func parseOffsetTable(
@@ -142,17 +113,13 @@ extension Plist.Binary.Context {
     }
 }
 
-// MARK: - Object Parsing
-
 extension Plist.Binary.Context {
     func parseObject(at objectIndex: UInt64) throws(Plist.Error) -> Plist.Value {
-        // Return the cached result for an already-completed object.
+
         if let cached = parsedObjects[objectIndex] {
             return cached
         }
 
-        // Detect cycles: an object reference that points back at an object
-        // still being parsed higher up the call stack.
         guard objectsInProgress.insert(objectIndex).inserted else {
             throw .circularReference
         }
@@ -176,7 +143,7 @@ extension Plist.Binary.Context {
         let value: Plist.Value
 
         switch marker {
-        // Simple types
+
         case Plist.Binary.Marker.null:
             value = .null
 
@@ -189,14 +156,12 @@ extension Plist.Binary.Context {
         case Plist.Binary.Marker.fill:
             value = .null
 
-        // Integers (0x1n where n indicates byte size power of 2)
         case 0x10...0x1F:
             let sizeCode = Plist.Binary.Marker.lowNibble(marker)
             let byteCount = 1 << Int(sizeCode)
             let intValue = try readSignedInt(at: &index, size: byteCount)
             value = .integer(intValue)
 
-        // Reals
         case Plist.Binary.Marker.real4:
             let bits = try Self.readUnsignedInt(bytes, at: &index, size: 4)
             let floatValue = Float(bitPattern: UInt32(bits))
@@ -207,29 +172,25 @@ extension Plist.Binary.Context {
             let doubleValue = Double(bitPattern: bits)
             value = .real(doubleValue)
 
-        // Date
         case Plist.Binary.Marker.date:
             let bits = try Self.readUnsignedInt(bytes, at: &index, size: 8)
             let dateValue = Double(bitPattern: bits)
             value = .date(dateValue)
 
-        // Data (0x4n)
         case 0x40...0x4F:
             let length = try readLength(marker: marker, at: &index)
             let dataBytes = try readBytes(at: &index, count: length)
             value = .data(dataBytes)
 
-        // ASCII String (0x5n)
         case 0x50...0x5F:
             let length = try readLength(marker: marker, at: &index)
             let stringBytes = try readBytes(at: &index, count: length)
             let string = String(decoding: stringBytes, as: UTF8.self)
             value = .string(string)
 
-        // Unicode String (0x6n)
         case 0x60...0x6F:
             let length = try readLength(marker: marker, at: &index)
-            // Length is in UTF-16 code units
+
             var utf16: [UInt16] = []
             utf16.reserveCapacity(length)
             for _ in 0..<length {
@@ -239,7 +200,6 @@ extension Plist.Binary.Context {
             let string = String(decoding: utf16, as: UTF16.self)
             value = .string(string)
 
-        // Array (0xAn)
         case 0xA0...0xAF:
             let count = try readLength(marker: marker, at: &index)
             var elements: [Plist.Value] = []
@@ -257,13 +217,11 @@ extension Plist.Binary.Context {
 
             value = .array(elements)
 
-        // Dictionary (0xDn)
         case 0xD0...0xDF:
             let count = try readLength(marker: marker, at: &index)
             var members: [(key: String, value: Plist.Value)] = []
             members.reserveCapacity(count)
 
-            // Read all keys first
             var keyRefs: [UInt64] = []
             keyRefs.reserveCapacity(count)
             for _ in 0..<count {
@@ -275,7 +233,6 @@ extension Plist.Binary.Context {
                 keyRefs.append(keyRef)
             }
 
-            // Read all values
             var valueRefs: [UInt64] = []
             valueRefs.reserveCapacity(count)
             for _ in 0..<count {
@@ -287,7 +244,6 @@ extension Plist.Binary.Context {
                 valueRefs.append(valueRef)
             }
 
-            // Parse keys and values
             for i in 0..<count {
                 let keyValue = try parseObject(at: keyRefs[i])
                 guard case .string(let key) = keyValue else {
@@ -308,8 +264,6 @@ extension Plist.Binary.Context {
     }
 }
 
-// MARK: - Reading Helpers
-
 extension Plist.Binary.Context {
     func readLength(marker: UInt8, at index: inout Bytes.Index) throws(Plist.Error) -> Int {
         let lowNibble = Plist.Binary.Marker.lowNibble(marker)
@@ -318,7 +272,6 @@ extension Plist.Binary.Context {
             return Int(lowNibble)
         }
 
-        // Extended length: next byte is 0x1n where n indicates size power of 2
         guard index < bytes.endIndex else {
             throw .unexpectedEndOfData
         }
@@ -343,12 +296,10 @@ extension Plist.Binary.Context {
 
     func readSignedInt(at index: inout Bytes.Index, size: Int) throws(Plist.Error) -> Int64 {
         if size == 16 {
-            // 16-byte integer: read high 8 bytes, then low 8 bytes
+
             let high = try Self.readUnsignedInt(bytes, at: &index, size: 8)
             let low = try Self.readUnsignedInt(bytes, at: &index, size: 8)
 
-            // The 128-bit two's complement value fits in Int64 only if the
-            // high word is exactly the sign extension of the low word.
             let signExtension: UInt64 = (low & 0x8000_0000_0000_0000) != 0 ? .max : 0
             guard high == signExtension else {
                 throw .integerOverflow
@@ -363,11 +314,10 @@ extension Plist.Binary.Context {
 
         let unsigned = try Self.readUnsignedInt(bytes, at: &index, size: size)
 
-        // Sign-extend if necessary
         if size < 8 {
             let signBit: UInt64 = 1 << (size * 8 - 1)
             if unsigned & signBit != 0 {
-                // Negative number - sign extend
+
                 let mask = UInt64.max << (size * 8)
                 return Int64(bitPattern: unsigned | mask)
             }

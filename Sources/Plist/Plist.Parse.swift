@@ -1,14 +1,8 @@
 import Plist_Binary
 import Plist_XML
 
-// MARK: - Parsing
-
 extension Plist {
-    /// Parses a plist from bytes, auto-detecting the format.
-    ///
-    /// - Parameter bytes: The plist bytes (XML or binary).
-    /// - Returns: The parsed plist value.
-    /// - Throws: `Plist.Error` if parsing fails.
+
     @inlinable
     public static func parse<Bytes>(
         _ bytes: Bytes
@@ -27,21 +21,11 @@ extension Plist {
         }
     }
 
-    /// Parses an XML plist from a string.
-    ///
-    /// - Parameter string: The XML plist string.
-    /// - Returns: The parsed plist value.
-    /// - Throws: `Plist.Error` if parsing fails.
     @inlinable
     public static func parse(xml string: String) throws(Self.Error) -> Plist {
         try XML.parse(string)
     }
 
-    /// Parses a binary plist from bytes.
-    ///
-    /// - Parameter bytes: The binary plist bytes.
-    /// - Returns: The parsed plist value.
-    /// - Throws: `Plist.Error` if parsing fails.
     @inlinable
     public static func parse<Bytes>(
         binary bytes: Bytes
@@ -51,15 +35,8 @@ extension Plist {
     }
 }
 
-// MARK: - Serialization
-
 extension Plist {
-    /// Serializes this plist to the specified format.
-    ///
-    /// - Parameters:
-    ///   - format: The output format (default: `.xml`).
-    ///   - pretty: Whether to format with indentation (default: `false`).
-    /// - Returns: The serialized bytes.
+
     @inlinable
     public func serialize(format: Format = .xml, pretty: Bool = false) -> [UInt8] {
         switch format {
@@ -71,20 +48,14 @@ extension Plist {
         }
     }
 
-    /// Serializes this plist to an XML string.
-    ///
-    /// - Parameter pretty: Whether to format with indentation (default: `false`).
-    /// - Returns: The XML string.
     @inlinable
     public func serializeXML(pretty: Bool = false) -> String {
         String(decoding: XML.serialize(self, pretty: pretty), as: UTF8.self)
     }
 }
 
-// MARK: - Serializable Convenience
-
 extension Plist.Serializable {
-    /// Creates an instance by parsing plist bytes.
+
     @inlinable
     public init<Bytes>(
         plistBytes bytes: Bytes
@@ -94,13 +65,11 @@ extension Plist.Serializable {
         self = try Self.deserialize(plist)
     }
 
-    /// Serializes this value to plist bytes.
     @inlinable
     public func plistBytes(format: Plist.Format = .xml, pretty: Bool = false) -> [UInt8] {
         plist.serialize(format: format, pretty: pretty)
     }
 
-    /// Serializes this value to an XML plist string.
     @inlinable
     public func plistString(pretty: Bool = false) -> String {
         plist.serializeXML(pretty: pretty)

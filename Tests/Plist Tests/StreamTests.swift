@@ -1,14 +1,9 @@
-/// StreamTests.swift
-/// swift-plist
-
 import Testing
 
 @testable import Plist
 
 @Suite
 struct Test {
-
-    // MARK: - ND Plist Streaming
 
     @Test
     func `Parse ND plist stream`() async throws {
@@ -145,7 +140,7 @@ struct Test {
 
     @Test
     func `Reject binary plist in ND stream`() async throws {
-        // Binary plist magic: "bplist"
+
         let input = "bplist00\n"
 
         let bytes = AsyncStream<UInt8> { continuation in
@@ -165,8 +160,6 @@ struct Test {
         #expect(failures == 1)
     }
 
-    // MARK: - Single Document Async Parse
-
     @Test
     func `Parse single document from async bytes`() async throws {
         let input =
@@ -181,7 +174,6 @@ struct Test {
 
         let plist = try await Plist.parse(collecting: bytes)
 
-        // Verify it's a dictionary with expected keys
         if case .dictionary(let pairs) = plist.value {
             let keys = pairs.map(\.key)
             #expect(keys.contains("name"))
@@ -242,7 +234,7 @@ struct Test {
             _ = try await Plist.parse(collecting: bytes)
             Issue.record("Expected error for empty input")
         } catch {
-            // Expected
+
         }
     }
 
@@ -251,7 +243,7 @@ struct Test {
         struct SourceFailure: Swift.Error {}
 
         let bytes = AsyncThrowingStream<UInt8, any Swift.Error> { continuation in
-            continuation.yield(0x62)  // a single byte, then the source fails
+            continuation.yield(0x62)
             continuation.finish(throwing: SourceFailure())
         }
 
@@ -259,13 +251,11 @@ struct Test {
             _ = try await Plist.parse(collecting: bytes)
             Issue.record("Expected error for a failing source sequence")
         } catch .sourceSequenceFailure(_) {
-            // Expected: distinguishable from a format-detection failure.
+
         } catch {
             Issue.record("Expected .sourceSequenceFailure, got \(error)")
         }
     }
-
-    // MARK: - Plist.Serializable Async
 
     @Test
     func `Deserialize from async bytes`() async throws {
@@ -280,7 +270,6 @@ struct Test {
             continuation.finish()
         }
 
-        // Parse then deserialize to avoid XML/Plist ambiguity
         let plist = try await Plist.parse(collecting: bytes)
         let value = try Int.deserialize(plist)
 
@@ -288,10 +277,6 @@ struct Test {
     }
 }
 
-/// Iterates through `AsyncSequence` protocol dispatch: the concrete
-/// iterator member lives in swift-async's internal-only Async Stream Core
-/// module, so direct `for await` over the concrete stream type fails
-/// MemberImportVisibility.
 private func collect<S: AsyncSequence>(_ sequence: S) async throws -> [S.Element] {
     var elements: [S.Element] = []
     for try await element in sequence { elements.append(element) }
