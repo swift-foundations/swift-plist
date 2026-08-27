@@ -2,7 +2,7 @@
 # Triaged by AI-assisted bulk pass (2026-04-29).
 description: "Property list parsing and serialization with auto-detected XML/binary formats and null-safe dynamic-member navigation for Swift."
 topics:
-  - foundations
+  - compositions
   - plist
 homepage: "https://swift-institute.org"
 socialPreview:

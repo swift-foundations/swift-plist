@@ -44,7 +44,7 @@ Add swift-plist to your `Package.swift` (no tags are published yet; pin to `main
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-foundations/swift-plist.git", branch: "main")
+    .package(url: "https://github.com/swift-compositions/swift-plist.git", branch: "main")
 ]
 ```
 
